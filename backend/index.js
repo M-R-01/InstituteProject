@@ -20,7 +20,7 @@ db.connect((err) => {
     console.log(err);
     return;
   } else {
-    console.log("Connected to the MongoDB database");
+    console.log("Connected to database");
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
@@ -69,11 +69,10 @@ app.post("/register", (req, res) => {
   });
 });
 
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  if (!email ||!password) {
+  if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
@@ -91,9 +90,8 @@ app.post("/login", (req, res) => {
         return res.status(401).json({ error: "Invalid password" });
       }
     }
-  })
+  });
 });
-
 
 app.post("/submit-for-approval", (req, res) => {
   const { courseName, courseDescription, facultyId } = req.body;
@@ -110,4 +108,65 @@ app.post("/submit-for-approval", (req, res) => {
     if (err) throw err;
     res.json({ message: "Course submitted for approval successfully!" });
   });
+});
+
+//admin-APIs
+
+app.get("/get-waiting-courses", (req, res) => {
+  db.query(
+    "SELECT w.course_name,w.couse_description,f.name,f.qualification,f.department,f.institution FROM Waiting_for_approval w LEFT JOIN Faculty f ON w.faculty_id=f.faculty_id",
+    (err, result) => {
+      if (err) throw err;
+      res.json(result);
+    },
+  );
+});
+
+app.post("/waiting-courses", (req, res) => {
+  const { courseName, courseDescription, facultyId, status } = req.body;
+
+  // Validate inputs
+  if (!courseName || !courseDescription || !facultyId || !status) {
+    return res
+      .status(400)
+      .json({ error: "Course name, description, faculty ID, and status required" });
+  }
+
+  db.query(
+    "SELECT * FROM Waiting_for_approval WHERE course_name = ?",
+    [courseName],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(400).json({ error: "Course not found in waiting list" });
+      } else {
+        if (status === "approved") {
+          db.query(
+            "INSERT INTO Courses (course_name, course_description, faculty_id, created_at) VALUES (?,?,?,CURDATE())",
+            [courseName, courseDescription, facultyId],
+            (err, result) => {
+              if (err) throw err;
+              db.query(
+                "DELETE FROM Waiting_for_approval WHERE course_name =?",
+                [courseName],
+                (err, result) => {
+                  if (err) throw err;
+                  res.json({ message: "Course approved and removed from waiting list" });
+                },
+              );
+            },
+          );
+        } else if (status === "rejected") {
+          db.query(
+            "DELETE FROM Waiting_for_approval WHERE course_name =?",
+            [courseName],
+            (err, result) => {
+              if (err) throw err;
+              res.json({ message: "Course rejected and removed from waiting list" });
+            },
+          );
+        }
+      }
+    },
+  );
 });
