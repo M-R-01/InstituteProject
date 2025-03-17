@@ -19,7 +19,7 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
       <div
         className={`${
           sidebarToggle ? "block" : "hidden"
-        } md:block w-64 bg-blue-400 flex flex-col fixed h-full px-4 py-2 transition-all duration-300 ease-in-out`}
+        } md:block w-64 bg-[#97DFFC] flex flex-col fixed h-full px-4 py-2 transition-all duration-300 ease-in-out`}
       >
         <div className="flex-grow p-4">
           
