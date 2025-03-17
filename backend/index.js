@@ -35,6 +35,8 @@ function hashPasswordWithSalt(password, salt) {
     .digest("hex");
 }
 
+
+
 app.post("/register", (req, res) => {
   const { name, qualification, email, department, institution, password } = req.body;
 
@@ -57,11 +59,10 @@ app.post("/register", (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     } else {
       db.query(
-        "INSERT INTO Faculty (name, qualification, email, department, institution, password, salt) VALUES(?,?,?,?,?,?,?)",
-        [name, qualification, email, department, institution, hashedPassword, salt],
+        "INSERT INTO Faculty (name, qualification, email, department, institution, password) VALUES(?,?,?,?,?,?)",
+        [name, qualification, email, department, institution, hashedPassword],
         (err, result) => {
           if (err) throw err;
-          console.log("User registered successfully!");
           res.json({ message: "User registered successfully!" });
         },
       );
@@ -93,6 +94,19 @@ app.post("/login", (req, res) => {
   });
 });
 
+
+app.get('/faculty/:email', (req, res) => {
+  const { email } = req.params;
+  db.query("SELECT * FROM Faculty WHERE email =?", [email], (err, result) => {
+    if (err) throw err;
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Faculty not found" });
+    }
+    res.json(result[0]);
+  })
+})
+
+
 app.post("/submit-for-approval", (req, res) => {
   const { courseName, courseDescription, facultyId } = req.body;
 
@@ -110,8 +124,42 @@ app.post("/submit-for-approval", (req, res) => {
   });
 });
 
-//admin-APIs
+app.post("/new-topic", (req, res) => {
+  const { courseId, file_name, file_type, file_link } = req.body;
 
+  // Validate inputs
+  if (!courseId || !file_name || !file_type || !file_link) {  
+    return res.status(400).json({ error: "Course ID, file type, and file link required" });
+  }
+
+  db.query(
+    "INSERT INTO Files (CID, file_name, file_type, file_link, uploaded_at) VALUES (?, ?, ?, ?,CURDATE())",
+    [courseId, file_name, file_type, file_link],
+    (err, result) => {
+      if (err) throw err;
+      res.json({ message: "New topic added successfully!" });
+    },
+  );
+});
+
+app.get("/get-topics/:courseId", (req, res) => {
+  const { courseId } = req.params;
+
+  // Validate inputs
+  if (!courseId) {
+    return res.status(400).json({ error: "Course ID required" });
+  }
+
+  db.query("SELECT * FROM Files WHERE CID = ?", courseId, (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  })
+})
+
+
+
+
+//admin-APIs
 app.get("/get-waiting-courses", (req, res) => {
   db.query(
     "SELECT w.course_name,w.couse_description,f.name,f.qualification,f.department,f.institution FROM Waiting_for_approval w LEFT JOIN Faculty f ON w.faculty_id=f.faculty_id",
@@ -122,7 +170,7 @@ app.get("/get-waiting-courses", (req, res) => {
   );
 });
 
-app.post("/waiting-courses", (req, res) => {
+app.post("/approve-waiting-courses", (req, res) => {
   const { courseName, courseDescription, facultyId, status } = req.body;
 
   // Validate inputs
@@ -167,6 +215,41 @@ app.post("/waiting-courses", (req, res) => {
           );
         }
       }
+    },
+  );
+});
+
+app.post("/assign-reviewers", (req, res) => {
+  const { courseId, reviewer } = req.body;
+
+  // Validate inputs
+  if (!courseId || !reviewer) {
+    return res.status(400).json({ error: "Course ID, reviewer required" });
+  }
+
+  db.query("SELECT * FROM Courses WHERE cid =?", [courseId], (err, result) => {
+    if (err) throw err;
+    if (result.length === 0) {
+      return res.status(400).json({ error: "Course not found" });
+    } else {
+      db.query(
+        "INSERT INTO Course_Reviewer (CID,faculty_id) VALUES(?,?)",
+        [courseId, reviewer],
+        (err, result) => {
+          if (err) throw err;
+          res.json({ message: "Reviewer assigned successfully!" });
+        },
+      );
+    }
+  });
+});
+
+app.get("/courses", (req, res) => {
+  db.query(
+    "SELECT c.course_name, c.created_at, f.name, f.qualification, f.department, f.institution FROM JOIN Faculty f ON c.faculty_id=f.faculty_id",
+    (err, result) => {
+      if (err) throw err;
+      res.json(result);
     },
   );
 });
