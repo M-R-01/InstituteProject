@@ -3,7 +3,7 @@
 import express from "express";
 import crypto from "crypto";
 import dotenv from "dotenv";
-import db from "./db.js";
+import handleConnect from "./db.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -15,32 +15,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-function handleConnect () {
-  db.connect((err) => {
-    if (err) {
-      console.log(err);
-      setTimeout(handleConnect, 2000);
-    } else {
-      console.log("Connected to database");
-      
-      app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-      });
-    }
-  });
-
-  db.on('error', err => {
-    console.error('Database error', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-      handleConnect(); // reconnect
-    } else {
-      throw err;
-    }
-  });
-}
 
 handleConnect();
-
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 
 const salt = 16;
 function hashPasswordWithSalt(password, salt) {
