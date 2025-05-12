@@ -1,5 +1,3 @@
-/** @format */
-
 import express from "express";
 import crypto from "crypto";
 import mysql from "mysql";
@@ -19,7 +17,7 @@ let db;
 
 function handleConnect () {
 
-  const db = mysql.createConnection({
+  db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
