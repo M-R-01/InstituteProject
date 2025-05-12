@@ -35,8 +35,6 @@ function hashPasswordWithSalt(password, salt) {
     .digest("hex");
 }
 
-
-
 app.post("/register", (req, res) => {
   const { name, qualification, email, department, institution, password } = req.body;
 
@@ -53,13 +51,13 @@ app.post("/register", (req, res) => {
 
   const hashedPassword = hashPasswordWithSalt(password, salt);
 
-  db.query("SELECT * FROM Faculty WHERE email =?", [email], (err, result) => {
+  db.query("SELECT * FROM Faculty WHERE Faculty_Email =?", [email], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
       return res.status(400).json({ error: "User already exists" });
     } else {
       db.query(
-        "INSERT INTO Faculty (name, qualification, email, department, institution, password) VALUES(?,?,?,?,?,?)",
+        "INSERT INTO Faculty (Faculty_Name, Faculty_Qualification, Faculty_Email, Faculty_department, Faculty_Institution, Password) VALUES(?,?,?,?,?,?)",
         [name, qualification, email, department, institution, hashedPassword],
         (err, result) => {
           if (err) throw err;
@@ -79,33 +77,35 @@ app.post("/login", (req, res) => {
 
   const inputHashed = hashPasswordWithSalt(password, salt);
 
-  db.query(`SELECT email, password FROM Faculty WHERE email = ?`, [email], (err, result) => {
-    if (err) throw err;
-    if (result.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    } else {
-      const { password: dbHashedPassword } = result[0];
-      if (inputHashed === dbHashedPassword) {
-        return res.json({ message: "Login successful!" });
+  db.query(
+    `SELECT Faculty_Email, Password FROM Faculty WHERE Faculty_Email = ?`,
+    [email],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(401).json({ error: "Invalid email or password" });
       } else {
-        return res.status(401).json({ error: "Invalid password" });
+        const { Password: dbHashedPassword } = result[0];
+        if (inputHashed === dbHashedPassword) {
+          return res.json({ message: "Login successful!" });
+        } else {
+          return res.status(401).json({ error: "Invalid password" });
+        }
       }
-    }
-  });
+    },
+  );
 });
 
-
-app.get('/faculty/:email', (req, res) => {
+app.get("/faculty/:email", (req, res) => {
   const { email } = req.params;
-  db.query("SELECT * FROM Faculty WHERE email =?", [email], (err, result) => {
+  db.query("SELECT * FROM Faculty WHERE Faculty_Email =?", [email], (err, result) => {
     if (err) throw err;
     if (result.length === 0) {
       return res.status(404).json({ error: "Faculty not found" });
     }
     res.json(result[0]);
-  })
-})
-
+  });
+});
 
 app.post("/submit-for-approval", (req, res) => {
   const { courseName, courseDescription, facultyId } = req.body;
@@ -116,7 +116,7 @@ app.post("/submit-for-approval", (req, res) => {
   }
 
   const sql =
-    "INSERT INTO Waiting_for_approval (course_name, couse_description, faculty_id) VALUES (?,?,?)";
+    "INSERT INTO Waiting_for_approval (Course_name, Course_description, FID) VALUES (?,?,?)";
 
   db.query(sql, [courseName, courseDescription, facultyId], (err, result) => {
     if (err) throw err;
@@ -128,7 +128,7 @@ app.post("/new-topic", (req, res) => {
   const { courseId, file_name, file_type, file_link } = req.body;
 
   // Validate inputs
-  if (!courseId || !file_name || !file_type || !file_link) {  
+  if (!courseId || !file_name || !file_type || !file_link) {
     return res.status(400).json({ error: "Course ID, file type, and file link required" });
   }
 
@@ -153,16 +153,13 @@ app.get("/get-topics/:courseId", (req, res) => {
   db.query("SELECT * FROM Files WHERE CID = ?", courseId, (err, result) => {
     if (err) throw err;
     res.json(result);
-  })
-})
-
-
-
+  });
+});
 
 //admin-APIs
 app.get("/get-waiting-courses", (req, res) => {
   db.query(
-    "SELECT w.course_name,w.couse_description,f.name,f.qualification,f.department,f.institution FROM Waiting_for_approval w LEFT JOIN Faculty f ON w.faculty_id=f.faculty_id",
+    "SELECT w.Course_name,w.Course_description,f.Faculty_Name,f.Faculty_Qualification,f.Faculty_department,f.Faculty_Institution FROM Waiting_for_approval w LEFT JOIN Faculty f ON w.FID=f.FID",
     (err, result) => {
       if (err) throw err;
       res.json(result);
@@ -181,7 +178,7 @@ app.post("/approve-waiting-courses", (req, res) => {
   }
 
   db.query(
-    "SELECT * FROM Waiting_for_approval WHERE course_name = ?",
+    "SELECT * FROM Waiting_for_approval WHERE Course_name = ?",
     [courseName],
     (err, result) => {
       if (err) throw err;
@@ -190,12 +187,12 @@ app.post("/approve-waiting-courses", (req, res) => {
       } else {
         if (status === "approved") {
           db.query(
-            "INSERT INTO Courses (course_name, course_description, faculty_id, created_at) VALUES (?,?,?,CURDATE())",
+            "INSERT INTO Courses (Course_name, Course_description, FID, created_at) VALUES (?,?,?,CURDATE())",
             [courseName, courseDescription, facultyId],
             (err, result) => {
               if (err) throw err;
               db.query(
-                "DELETE FROM Waiting_for_approval WHERE course_name =?",
+                "DELETE FROM Waiting_for_approval WHERE Course_name =?",
                 [courseName],
                 (err, result) => {
                   if (err) throw err;
@@ -206,7 +203,7 @@ app.post("/approve-waiting-courses", (req, res) => {
           );
         } else if (status === "rejected") {
           db.query(
-            "DELETE FROM Waiting_for_approval WHERE course_name =?",
+            "DELETE FROM Waiting_for_approval WHERE Course_name =?",
             [courseName],
             (err, result) => {
               if (err) throw err;
@@ -227,13 +224,13 @@ app.post("/assign-reviewers", (req, res) => {
     return res.status(400).json({ error: "Course ID, reviewer required" });
   }
 
-  db.query("SELECT * FROM Courses WHERE cid =?", [courseId], (err, result) => {
+  db.query("SELECT CID FROM Courses WHERE CID =?", [courseId], (err, result) => {
     if (err) throw err;
     if (result.length === 0) {
       return res.status(400).json({ error: "Course not found" });
     } else {
       db.query(
-        "INSERT INTO Course_Reviewer (CID,faculty_id) VALUES(?,?)",
+        "INSERT INTO Course_Reviewer (CID,FID) VALUES(?,?)",
         [courseId, reviewer],
         (err, result) => {
           if (err) throw err;
@@ -246,7 +243,7 @@ app.post("/assign-reviewers", (req, res) => {
 
 app.get("/courses", (req, res) => {
   db.query(
-    "SELECT c.course_name, c.created_at, f.name, f.qualification, f.department, f.institution FROM JOIN Faculty f ON c.faculty_id=f.faculty_id",
+    "SELECT c.Course_name, c.created_at, f.Faculty_Name, f.Faculty_Qualification, f.Faculty_department, f.Faculty_Institution, rf.Faculty_Name as Reviewer  FROM Courses c JOIN Faculty f ON c.FID=f.FID JOIN Course_Reviewer r on c.CID=r.CID join Faculty rf on r.FID=rf.FID" ,
     (err, result) => {
       if (err) throw err;
       res.json(result);
