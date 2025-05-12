@@ -7,7 +7,8 @@ let db;
 
 function handleConnect () {
 
-  const db = mysql.createConnection({
+  const db = mysql.createPool({
+    connectionLimit: 10,
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -15,12 +16,13 @@ function handleConnect () {
     port: 3306
     })
 
-  db.connect((err) => {
+  db.getConnection((err,connection) => {
     if (err) {
       console.log(err);
       setTimeout(handleConnect, 2000);
     } else {
       console.log("Connected to database");
+      connection.release();
     }
   });
 
