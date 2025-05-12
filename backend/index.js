@@ -15,17 +15,32 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-db.connect((err) => {
-  if (err) {
-    console.log(err);
-    return;
-  } else {
-    console.log("Connected to database");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  }
-});
+function handleConnect () {
+  db.connect((err) => {
+    if (err) {
+      console.log(err);
+      setTimeout(handleConnect, 2000);
+    } else {
+      console.log("Connected to database");
+      
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    }
+  });
+
+  db.on('error', err => {
+    console.error('Database error', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleConnect(); // reconnect
+    } else {
+      throw err;
+    }
+  });
+}
+
+handleConnect();
+
 
 const salt = 16;
 function hashPasswordWithSalt(password, salt) {
@@ -156,6 +171,8 @@ app.get("/get-topics/:courseId", (req, res) => {
   });
 });
 
+
+
 //admin-APIs
 app.get("/get-waiting-courses", (req, res) => {
   db.query(
@@ -215,6 +232,8 @@ app.post("/approve-waiting-courses", (req, res) => {
     },
   );
 });
+
+
 
 app.post("/assign-reviewers", (req, res) => {
   const { courseId, reviewer } = req.body;
