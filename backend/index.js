@@ -3,7 +3,7 @@
 import express from "express";
 import crypto from "crypto";
 import dotenv from "dotenv";
-import handleConnect from "./db.js";
+import {handleConnect, db} from "./db.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 

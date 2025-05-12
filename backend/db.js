@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+let db;
+
 function handleConnect () {
 
   const db = mysql.createConnection({
@@ -32,4 +34,4 @@ function handleConnect () {
   });
 }
 
-export default handleConnect;
+export default {handleConnect, db};
