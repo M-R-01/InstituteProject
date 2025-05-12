@@ -2,6 +2,7 @@
 
 import express from "express";
 import crypto from "crypto";
+import mysql from "mysql";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
