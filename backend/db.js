@@ -34,4 +34,4 @@ function handleConnect () {
   });
 }
 
-export default {handleConnect, db};
+export {handleConnect, db};
