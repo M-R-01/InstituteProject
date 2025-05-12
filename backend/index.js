@@ -3,7 +3,6 @@
 import express from "express";
 import crypto from "crypto";
 import dotenv from "dotenv";
-import {handleConnect, db} from "./db.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -15,11 +14,38 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+function handleConnect () {
 
-handleConnect();
-app.listen(PORT, () => {
+  const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_DATABASE,
+    port: 3306
+    })
+
+  db.connect((err) => {
+    if (err) {
+      console.log(err);
+      setTimeout(handleConnect, 2000);
+    } else {
+      console.log("Connected to database");
+      app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    });
+    }
   });
+
+  db.on('error', err => {
+    console.error('Database error', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleConnect(); // reconnect
+    } else {
+      throw err;
+    }
+  });
+}
+handleConnect();
 
 const salt = 16;
 function hashPasswordWithSalt(password, salt) {
