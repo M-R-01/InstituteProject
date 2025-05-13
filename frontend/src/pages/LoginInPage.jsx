@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 
-function LoginInPage() {
+const LoginInPage = () => {
   const [username, setUsername] = useState("");
 
   const [password, setPassword] = useState("");

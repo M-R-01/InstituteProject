@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 
-function SignupPage() {
+const SignupPage = () => {
   const [name, setname] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");

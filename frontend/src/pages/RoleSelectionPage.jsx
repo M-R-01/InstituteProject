@@ -1,6 +1,9 @@
 import React from "react";
 
-function RoleSelectionPage() {
+const RoleSelectionPage = () => {
+
+  
+
   return (
     <>
       <div className="h-screen w-full flex items-center justify-center bg-white">
