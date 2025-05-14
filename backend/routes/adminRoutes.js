@@ -29,13 +29,13 @@ router.get("/get-waiting-courses", (req, res) => {
 });
 
 router.post("/approve-waiting-courses", (req, res) => {
-  const { courseName, courseDescription, facultyId, status } = req.body;
+  const { courseName, courseDescription, status } = req.body;
 
   // Validate inputs
-  if (!courseName || !courseDescription || !facultyId || !status) {
+  if (!courseName || !courseDescription || !status) {
     return res
       .status(400)
-      .json({ error: "Course name, description, faculty ID, and status required" });
+      .json({ error: "Course name, description, and status required" });
   }
 
   db.query(
@@ -47,6 +47,7 @@ router.post("/approve-waiting-courses", (req, res) => {
         return res.status(400).json({ error: "Course not found in waiting list" });
       } else {
         if (status === "approved") {
+          const facultyId = result[0].FID;
           db.query(
             "INSERT INTO Courses (Course_name, Course_description, FID, created_at) VALUES (?,?,?,CURDATE())",
             [courseName, courseDescription, facultyId],
