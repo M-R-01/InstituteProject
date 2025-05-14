@@ -43,7 +43,7 @@ const AdminCourses = () => {
       });
   };
 
-  const columns = [
+  const coursesColumns = [
     {
       header: "Course Name",
       accessorKey: "Course_name",
@@ -90,9 +90,9 @@ const AdminCourses = () => {
     },
   ];
 
-  const table = useReactTable({
+  const coursesTable = useReactTable({
     data: courses,
-    columns,
+    columns: coursesColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -119,10 +119,10 @@ const AdminCourses = () => {
         <main className="p-10 pt-24 bg-gray-200 min-h-screen overflow-y-scroll overflow-x-scroll">
           <div className="bg-white p-8 text-black rounded-lg text-center shadow-md max-w-auto">
             <h2 className="mb-6 text-black">All Courses</h2>
-            <div style={{ width: table.getCenterTotalSize() }}>
-              {table.getRowModel().rows.length > 0 ? (
+            <div style={{ width: coursesTable.getCenterTotalSize() }}>
+              {coursesTable.getRowModel().rows.length > 0 ? (
                 <>
-                  {table.getHeaderGroups().map((headerGroup) => (
+                  {coursesTable.getHeaderGroups().map((headerGroup) => (
                     <div key={headerGroup.id} className="flex">
                       {headerGroup.headers.map((header) => (
                         <div
@@ -138,7 +138,7 @@ const AdminCourses = () => {
                       ))}
                     </div>
                   ))}
-                  {table.getRowModel().rows.map((row) => (
+                  {coursesTable.getRowModel().rows.map((row) => (
                     <div key={row.id} className="flex">
                       {row.getVisibleCells().map((cell) => (
                         <div
@@ -152,17 +152,17 @@ const AdminCourses = () => {
                     </div>
                   ))}
                   <p>
-                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                    Page {coursesTable.getState().pagination.pageIndex + 1} of {coursesTable.getPageCount()}
                   </p>
                   <button
                     className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.previousPage}
+                    onClick={coursesTable.getState().pagination.previousPage}
                   >
                     {"<"}
                   </button>
                   <button
                     className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.nextPage}
+                    onClick={coursesTable.getState().pagination.nextPage}
                   >
                     {">"}
                   </button>

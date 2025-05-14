@@ -167,4 +167,27 @@ router.get("/course/:CID", (req, res) => {
   );
 });
 
+router.get("/available-reviewers", (req, res) => {
+  db.query(
+    `SELECT 
+      f.FID,
+      f.Faculty_Name,
+      f.Faculty_Qualification,
+      f.Faculty_department,
+      f.Faculty_Institution
+    FROM 
+      Faculty f
+    LEFT JOIN 
+      Course_Reviewer r ON f.FID = r.FID
+    GROUP BY 
+      f.FID, f.Faculty_Name, f.Faculty_Qualification, f.Faculty_department, f.Faculty_Institution
+    HAVING 
+      COUNT(r.CID) < 3`,
+    (err, result) => {
+      if (err) throw err;
+      res.json(result);
+    },
+  );
+});
+
 export default router;
