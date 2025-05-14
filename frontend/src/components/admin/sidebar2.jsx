@@ -1,5 +1,6 @@
 import React from 'react';
 import { IoHome, IoSettingsOutline } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
 import { BiLogOut } from 'react-icons/bi';
 import { FaBars } from 'react-icons/fa6';
 import { LiaChalkboardTeacherSolid } from 'react-icons/lia';
@@ -32,25 +33,24 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
           
           <ul className="mt-3 text-black font-bold py-3">
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
+              <Link to="/admin/home">
                 <IoHome className="inline-block w-6 h-6 mr-2 -mt-2" />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Home</span>
-              </a>
+              </Link>
             </li>
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
+              
                 <LiaChalkboardTeacherSolid className="inline-block w-6 h-6 mr-2 -mt-2" />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Faculty</span>
-              </a>
             </li>
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
+              <Link to="/admin/courses">
                 <PiStudentFill className="inline-block w-6 h-6 mr-2 -mt-2" />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Courses</span>
-              </a>
+              </Link>
             </li>
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
+              <a href="#">
                 <IoSettingsOutline className="inline-block w-6 h-6 mr-2 -mt-2 " />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Settings</span>
               </a>
