@@ -29,6 +29,9 @@
         courseDescription: row.Course_description,
         status: "approved",
       })
+      .then((response) => {
+        console.log("Course approved:", response.data);
+      })
     };
 
     const handleReject = (row) => {

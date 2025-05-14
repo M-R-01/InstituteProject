@@ -105,7 +105,22 @@ router.post("/assign-reviewers", (req, res) => {
 
 router.get("/courses", (req, res) => {
   db.query(
-    "SELECT c.Course_name, c.created_at, f.Faculty_Name, f.Faculty_Qualification, f.Faculty_department, f.Faculty_Institution, rf.Faculty_Name as Reviewer  FROM Courses c JOIN Faculty f ON c.FID=f.FID JOIN Course_Reviewer r on c.CID=r.CID join Faculty rf on r.FID=rf.FID",
+    `SELECT 
+      c.Course_name, 
+      c.created_at, 
+      f.Faculty_Name, 
+      f.Faculty_Qualification, 
+      f.Faculty_department, 
+      f.Faculty_Institution, 
+      rf.Faculty_Name as Reviewer  
+    FROM 
+      Courses c 
+    JOIN 
+      Faculty f ON c.FID=f.FID 
+    LEFT JOIN 
+      Course_Reviewer r on c.CID=r.CID 
+    LEFT JOIN 
+      Faculty rf on r.FID=rf.FID`,
     (err, result) => {
       if (err) throw err;
       res.json(result);

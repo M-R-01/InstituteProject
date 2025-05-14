@@ -46,7 +46,7 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
               <a href="#" className=" px-3">
                 <PiStudentFill className="inline-block w-6 h-6 mr-2 -mt-2" />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Reviwer</span>
+                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Courses</span>
               </a>
             </li>
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
