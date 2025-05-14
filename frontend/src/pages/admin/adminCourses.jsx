@@ -19,6 +19,7 @@ const AdminCourses = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
 
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [availableReviewers, setAvailableReviewers] = useState([]);
 
   useEffect(() => {
     axios
@@ -42,6 +43,18 @@ const AdminCourses = () => {
         console.error("Error fetching selected course:", error);
       });
   };
+
+  const getAvailableReviewers = () => {
+    axios
+      .get("https://instituteproject.up.railway.app/admin/available-reviewers")
+      .then((response) => {
+        setAvailableReviewers(response.data);
+        console.log("Available reviewers:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching available reviewers:", error);
+      });
+  }
 
   const coursesColumns = [
     {
@@ -86,6 +99,29 @@ const AdminCourses = () => {
     {
       header: "Created At",
       accessorKey: "created_at",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+  ];
+
+  const reviewersColumns = [
+    {
+      header: "Name",
+      accessorKey: "Faculty_Name",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Qualification",
+      accessorKey: "Faculty_Qualification",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Department",
+      accessorKey: "Faculty_department",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Institution",
+      accessorKey: "Faculty_Institution",
       cell: (props) => <p>{props.getValue()}</p>,
     },
   ];
@@ -209,7 +245,7 @@ const AdminCourses = () => {
                   </div>
                   <div>
                     {selectedCourse.Reviewer == null ? (
-                      <button className="bg-[#2b193d] hover:bg-green-700 text-white p-2 rounded-lg">
+                      <button className="bg-[#2b193d] hover:bg-green-700 text-white p-2 rounded-lg" onClick={getAvailableReviewers}>
                         Assign Reviewer
                       </button>
                     ) : (
@@ -217,6 +253,11 @@ const AdminCourses = () => {
                     )}
                   </div>
                 </div>
+              </div>
+
+              <div className="text-left mt-4">
+                Assign reviewer to this course:
+                
               </div>
             </div>
           )}

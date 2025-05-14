@@ -174,7 +174,8 @@ router.get("/available-reviewers", (req, res) => {
       f.Faculty_Name,
       f.Faculty_Qualification,
       f.Faculty_department,
-      f.Faculty_Institution
+      f.Faculty_Institution,
+      COUNT(r.CID) AS Number_of_Courses_Reviewing
     FROM 
       Faculty f
     LEFT JOIN 
