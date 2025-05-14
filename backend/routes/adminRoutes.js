@@ -106,6 +106,7 @@ router.post("/assign-reviewers", (req, res) => {
 router.get("/courses", (req, res) => {
   db.query(
     `SELECT 
+      c.CID,
       c.Course_name, 
       c.created_at, 
       f.Faculty_Name, 

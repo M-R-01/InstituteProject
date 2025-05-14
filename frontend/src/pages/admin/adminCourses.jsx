@@ -20,15 +20,56 @@ const AdminCourses = () => {
     axios.get("https://instituteproject.up.railway.app/admin/courses")
       .then((response) => {
         setCourses(response.data);
-        console.log("Courses data:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching courses:", error);
       });
   }, []);
 
+  const columns = [
+    {
+      header: "Course Name",
+      accessorKey: "Course_name",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Faculty Name",
+      accessorKey: "Faculty_Name",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Faculty Qualification",
+      accessorKey: "Faculty_Qualification",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Faculty Department",
+      accessorKey: "Faculty_department",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Faculty Institution",
+      accessorKey: "Faculty_Institution",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Reviewer",
+      accessorKey: "Reviewer",
+      cell: (props) => <p>{props.getValue() == null ? "No Reviewer Assigned" : props.getValue()}</p>,
+    },
+    {
+      header: "Created At",
+      accessorKey: "created_at",
+      cell: (props) => <p>{props.getValue()}</p>,
+    }
+  ]
+
   const table = useReactTable({
     data: courses,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   })
 
   return (
@@ -46,12 +87,12 @@ const AdminCourses = () => {
             >
               <FaBars />
             </button>
-            <h1 className="text-xl font-bold text-black">Home</h1>
+            <h1 className="text-xl font-bold text-black">Courses</h1>
           </nav>
 
           <main className="p-10 pt-24 bg-gray-200 min-h-screen overflow-y-scroll overflow-x-scroll">
-            {/*<div  className="bg-white p-8 text-black rounded-lg text-center shadow-md max-w-auto  mt-5">
-              <h2>Courses Waiting For Approval</h2>
+            <div  className="bg-white p-8 text-black rounded-lg text-center shadow-md max-w-auto">
+              <h2 className="mb-6 text-black">All Courses</h2>
               <div style={{ width: table.getCenterTotalSize() }}>
                 {table.getRowModel().rows.length > 0 ? (
                   <>
@@ -103,12 +144,12 @@ const AdminCourses = () => {
                 ) : (
                   <div className="flex">
                     <div className="flex-1 text-left border border-gray-600 p-2">
-                      No courses waiting for approval
+                      No courses available
                     </div>
                   </div>
                 )}
               </div>
-            </div>*/}
+            </div>
           </main>
         </div>
       </div>
