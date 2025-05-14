@@ -6,16 +6,19 @@ import express from "express";
 const router = express.Router();
 
 router.get("/metrics", (req, res) => {
-  db.query(`SELECT 
+  db.query(
+    `SELECT 
     (SELECT COUNT(*) FROM Courses) AS courseCount,
     (SELECT COUNT(*) FROM Faculty) AS facultyCount,
     (SELECT COUNT(*) FROM Waiting_for_approval) AS waitingCount,
     (SELECT COUNT(*) FROM Files) AS fileCount,
     (SELECT COUNT(*) * 1.0 / (SELECT COUNT(*) FROM Courses) FROM Files) AS filePerCourse
-   `, (err, result) => {
-    if (err) throw err;
-    res.json(result[0]);
-  });
+   `,
+    (err, result) => {
+      if (err) throw err;
+      res.json(result[0]);
+    },
+  );
 });
 
 router.get("/get-waiting-courses", (req, res) => {
@@ -33,9 +36,7 @@ router.post("/approve-waiting-courses", (req, res) => {
 
   // Validate inputs
   if (!courseName || !courseDescription || !status) {
-    return res
-      .status(400)
-      .json({ error: "Course name, description, and status required" });
+    return res.status(400).json({ error: "Course name, description, and status required" });
   }
 
   db.query(
@@ -125,6 +126,42 @@ router.get("/courses", (req, res) => {
     (err, result) => {
       if (err) throw err;
       res.json(result);
+    },
+  );
+});
+
+router.get("/course/:CID", (req, res) => {
+  const { CID } = req.params;
+  db.query(
+    `SELECT 
+      c.CID,
+      c.Course_name,
+      f.Faculty_Name,
+      rf.Faculty_Name AS Reviewer,
+      COALESCE(fc.file_count, 0) AS File_Count
+    FROM 
+      Courses c
+    JOIN 
+      Faculty f ON c.FID = f.FID
+    LEFT JOIN 
+      Course_Reviewer r ON c.CID = r.CID
+    LEFT JOIN 
+      Faculty rf ON r.FID = rf.FID
+    LEFT JOIN (
+      SELECT 
+        CID, 
+        COUNT(*) AS file_count
+      FROM 
+        Files
+      GROUP BY 
+        CID
+    ) fc ON c.CID = fc.CID
+    WHERE 
+      c.CID = ?`,
+    [CID],
+    (err, result) => {
+      if (err) throw err;
+      res.json(result[0]);
     },
   );
 });

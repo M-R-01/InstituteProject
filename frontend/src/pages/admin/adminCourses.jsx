@@ -16,21 +16,35 @@ const AdminCourses = () => {
   const [courses, setCourses] = useState([]);
   const [sidebarToggle, setSidebarToggle] = useState(false);
 
+  const [selectedCourse, setSelectedCourse] = useState([]);
+
   useEffect(() => {
     axios.get("https://instituteproject.up.railway.app/admin/courses")
       .then((response) => {
         setCourses(response.data);
+        console.log("Courses data:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching courses:", error);
       });
   }, []);
 
+  const getSelectedCourse = (CID) => {
+    axios.get(`https://instituteproject.up.railway.app/admin/course/${CID}`)
+      .then((response) => {
+        console.log("Selected course data:", response.data);
+        setSelectedCourse(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching selected course:", error);
+      });
+  }
+
   const columns = [
     {
       header: "Course Name",
       accessorKey: "Course_name",
-      cell: (props) => <p>{props.getValue()}</p>,
+      cell: (props) => <p onClick={() => getSelectedCourse(props.row.id)}>{props.getValue()}</p>,
     },
     {
       header: "Faculty Name",
