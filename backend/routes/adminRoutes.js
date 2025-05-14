@@ -108,7 +108,8 @@ router.get("/courses", (req, res) => {
   db.query(
     `SELECT 
       c.CID,
-      c.Course_name, 
+      c.Course_name,
+      c.Course_description,
       c.created_at, 
       f.Faculty_Name, 
       f.Faculty_Qualification, 

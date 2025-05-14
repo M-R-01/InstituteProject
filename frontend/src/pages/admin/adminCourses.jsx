@@ -22,7 +22,6 @@ const AdminCourses = () => {
     axios.get("https://instituteproject.up.railway.app/admin/courses")
       .then((response) => {
         setCourses(response.data);
-        console.log("Courses data:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching courses:", error);
@@ -32,7 +31,6 @@ const AdminCourses = () => {
   const getSelectedCourse = (CID) => {
     axios.get(`https://instituteproject.up.railway.app/admin/course/${CID}`)
       .then((response) => {
-        console.log("Selected course data:", response.data);
         setSelectedCourse(response.data);
       })
       .catch((error) => {
@@ -44,7 +42,7 @@ const AdminCourses = () => {
     {
       header: "Course Name",
       accessorKey: "Course_name",
-      cell: (props) => <p onClick={() => getSelectedCourse(props.row.id)}>{props.getValue()}</p>,
+      cell: (props) => <p onClick={() => getSelectedCourse(props.row.original.CID)}>{props.getValue()}</p>,
     },
     {
       header: "Faculty Name",
@@ -163,6 +161,27 @@ const AdminCourses = () => {
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="bg-white p-8 text-black rounded-lg shadow-md max-w-auto mt-10">
+                <div className="flex justify-between">
+                    <div>
+                        <h2 className="text-black font-bold">Selected Course</h2>
+                        <h2 className="text-black">{selectedCourse.Course_name}</h2>
+                    </div>
+                    <div>
+                        <h2 className="text-black font-bold">Course Description</h2>
+                        <p className="text-black">{selectedCourse.Course_description}</p>
+                    </div>
+                    <div>
+                        <h2 className="text-black font-bold">Faculty Name</h2>
+                        <p className="text-black">{selectedCourse.Faculty_Name}</p>
+                    </div>
+                    <div>
+                        <h2 className="text-black font-bold">Reviewer</h2>
+                        <p className="text-black">{selectedCourse.Reviewer}</p>
+                    </div>
+                </div>
             </div>
           </main>
         </div>
