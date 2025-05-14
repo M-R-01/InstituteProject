@@ -32,6 +32,7 @@ const AdminCourses = () => {
     axios.get(`https://instituteproject.up.railway.app/admin/course/${CID}`)
       .then((response) => {
         setSelectedCourse(response.data);
+        console.log("Selected course:", response.data);
       })
       .catch((error) => {
         console.error("Error fetching selected course:", error);

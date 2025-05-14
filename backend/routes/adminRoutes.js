@@ -109,7 +109,6 @@ router.get("/courses", (req, res) => {
     `SELECT 
       c.CID,
       c.Course_name,
-      c.Course_description,
       c.created_at, 
       f.Faculty_Name, 
       f.Faculty_Qualification, 
@@ -137,6 +136,7 @@ router.get("/course/:CID", (req, res) => {
     `SELECT 
       c.CID,
       c.Course_name,
+      c.Course_description,
       f.Faculty_Name,
       rf.Faculty_Name AS Reviewer,
       COALESCE(fc.file_count, 0) AS File_Count
