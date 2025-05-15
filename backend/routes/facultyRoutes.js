@@ -43,7 +43,7 @@ router.post("/new-topic", (req, res) => {
   db.query(
     `INSERT INTO 
     Files 
-    (CID, File_name, File_type, File_link, Uploaded_at) 
+    (File_Id, CID, File_name, File_type, File_link, Uploaded_at) 
     VALUES (?, ?, ?, ?, CURDATE())`,
     [courseId, file_name, file_type, file_link],
     (err, result) => {

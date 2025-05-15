@@ -167,6 +167,20 @@ router.get("/course/:CID", (req, res) => {
   );
 });
 
+router.get("/get-topics/:courseId", (req, res) => {
+  const { courseId } = req.params;
+
+  // Validate inputs
+  if (!courseId) {
+    return res.status(400).json({ error: "Course ID required" });
+  }
+
+  db.query("SELECT * FROM Files WHERE CID = ?", [courseId], (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+});
+
 router.get("/available-reviewers", (req, res) => {
   db.query(
     `SELECT 
