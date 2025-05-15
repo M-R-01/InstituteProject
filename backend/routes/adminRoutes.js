@@ -111,6 +111,7 @@ router.get("/faculty", (req, res) => {
         f.Faculty_Name,
         f.Faculty_Qualification,
         f.Faculty_department,
+        f.Faculty_Email,
         f.Faculty_Institution,
         COUNT(DISTINCT c.CID) AS Number_of_Courses_Taught,
         COUNT(DISTINCT r.CID) AS Number_of_Courses_Reviewed
