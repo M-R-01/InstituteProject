@@ -28,7 +28,7 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
         <div className="flex-grow p-4">
           <h1 className="text-xl text-black font-bold md:block">
             Hello,
-            <p>Username!!</p>
+            <p>Admin!!</p>
           </h1>
 
           <ul className="mt-3 text-black font-bold py-3">
@@ -49,12 +49,6 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
                 <PiStudentFill className="inline-block w-6 h-6 mr-2 -mt-2" />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Courses</span>
               </Link>
-            </li>
-            <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#">
-                <IoSettingsOutline className="inline-block w-6 h-6 mr-2 -mt-2 " />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Settings</span>
-              </a>
             </li>
           </ul>
         </div>
