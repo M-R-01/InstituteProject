@@ -21,6 +21,8 @@ const AdminCourses = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [availableReviewers, setAvailableReviewers] = useState([]);
 
+  const [assignReviewer, setAssignReviewer] = useState(false);
+
   useEffect(() => {
     axios
       .get("https://instituteproject.up.railway.app/admin/courses")
@@ -53,6 +55,22 @@ const AdminCourses = () => {
       })
       .catch((error) => {
         console.error("Error fetching available reviewers:", error);
+      });
+  };
+
+  const assignReviewerToCourse = (reviewer, courseId) => {
+    axios
+      .post("https://instituteproject.up.railway.app/admin/assign-reviewers", {
+        courseId: courseId,
+        reviewer: reviewer,
+      })
+      .then((response) => {
+        console.log("Reviewer assigned successfully:", response.data);
+        setAssignReviewer(false);
+        setSelectedCourse(null);
+      })
+      .catch((error) => {
+        console.error("Error assigning reviewer:", error);
       });
   }
 
@@ -124,11 +142,36 @@ const AdminCourses = () => {
       accessorKey: "Faculty_Institution",
       cell: (props) => <p>{props.getValue()}</p>,
     },
+    {
+      header: "No. of Courses Assigned",
+      accessorKey: "Number_of_Courses_Reviewing",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Assign Reviewer",
+      cell: (props) => (
+        <button className="bg-green-700 hover:bg-green-700 text-white p-2 rounded-lg w-1/2"
+          onClick={() => {
+            assignReviewerToCourse(props.row.original.FID, selectedCourse.CID);
+          }}
+        >
+          Assign
+        </button>
+      ),
+    },
   ];
 
   const coursesTable = useReactTable({
     data: courses,
     columns: coursesColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  const reviewersTable = useReactTable({
+    data: availableReviewers,
+    columns: reviewersColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -188,7 +231,8 @@ const AdminCourses = () => {
                     </div>
                   ))}
                   <p>
-                    Page {coursesTable.getState().pagination.pageIndex + 1} of {coursesTable.getPageCount()}
+                    Page {coursesTable.getState().pagination.pageIndex + 1} of{" "}
+                    {coursesTable.getPageCount()}
                   </p>
                   <button
                     className="border border-gray-600 text-15"
@@ -245,8 +289,14 @@ const AdminCourses = () => {
                   </div>
                   <div>
                     {selectedCourse.Reviewer == null ? (
-                      <button className="bg-[#2b193d] hover:bg-green-700 text-white p-2 rounded-lg" onClick={getAvailableReviewers}>
-                        Assign Reviewer
+                      <button
+                        className="bg-[#2b193d] hover:bg-green-700 text-white p-2 w-1/2 rounded-lg"
+                        onClick={() => {
+                          setAssignReviewer(!assignReviewer);
+                          getAvailableReviewers();
+                        }}
+                      >
+                        {assignReviewer ? "Close" : "Assign Reviewer"}
                       </button>
                     ) : (
                       ""
@@ -255,10 +305,68 @@ const AdminCourses = () => {
                 </div>
               </div>
 
-              <div className="text-left mt-4">
-                Assign reviewer to this course:
-                
-              </div>
+              {assignReviewer && (
+                <div className=" mt-4 text-center">
+                  <h2 className="text-black text-left">Available Reviewers</h2>
+                  <div style={{ width: reviewersTable.getCenterTotalSize() }}>
+                    {reviewersTable.getRowModel().rows.length > 0 ? (
+                      <>
+                        {reviewersTable.getHeaderGroups().map((headerGroup) => (
+                          <div key={headerGroup.id} className="flex">
+                            {headerGroup.headers.map((header) => (
+                              <div
+                                key={header.id}
+                                style={{ width: header.getSize() }}
+                                className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                              >
+                                {header.column.columnDef.header}
+                                {header.column.getCanSort() && (
+                                  <FaSort onClick={header.column.getToggleSortingHandler()} />
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                        {reviewersTable.getRowModel().rows.map((row) => (
+                          <div key={row.id} className="flex">
+                            {row.getVisibleCells().map((cell) => (
+                              <div
+                                key={cell.id}
+                                style={{ width: cell.column.getSize() }}
+                                className="text-left border border-gray-600 p-2"
+                              >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                        <p>
+                          Page {reviewersTable.getState().pagination.pageIndex + 1} of{" "}
+                          {reviewersTable.getPageCount()}
+                        </p>
+                        <button
+                          className="border border-gray-600 text-15"
+                          onClick={reviewersTable.getState().pagination.previousPage}
+                        >
+                          {"<"}
+                        </button>
+                        <button
+                          className="border border-gray-600 text-15"
+                          onClick={reviewersTable.getState().pagination.nextPage}
+                        >
+                          {">"}
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex">
+                        <div className="flex-1 text-left border border-gray-600 p-2">
+                          Reviewers Not Available
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </main>
