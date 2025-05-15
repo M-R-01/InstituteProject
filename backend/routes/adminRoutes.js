@@ -104,6 +104,31 @@ router.post("/assign-reviewers", (req, res) => {
   });
 });
 
+router.get("/faculty", (req, res) => {
+  db.query(
+    `SELECT 
+        f.FID,
+        f.Faculty_Name,
+        f.Faculty_Qualification,
+        f.Faculty_department,
+        f.Faculty_Institution,
+        COUNT(DISTINCT c.CID) AS Number_of_Courses_Taught,
+        COUNT(DISTINCT r.CID) AS Number_of_Courses_Reviewed
+    FROM 
+        Faculty f
+    LEFT JOIN 
+        Courses c ON f.FID = c.FID
+    LEFT JOIN 
+        Reviews r ON f.FID = r.FID
+    GROUP BY 
+        f.FID, f.Faculty_Name, f.Faculty_Qualification, f.Faculty_department, f.Faculty_Institution`,
+    (err, result) => {
+      if (err) throw err;
+      res.json(result);
+    },
+  );
+});
+
 router.get("/courses", (req, res) => {
   db.query(
     `SELECT 

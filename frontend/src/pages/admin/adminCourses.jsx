@@ -24,6 +24,7 @@ const AdminCourses = () => {
 
   const [assignReviewer, setAssignReviewer] = useState(false);
 
+
   useEffect(() => {
     axios
       .get("https://instituteproject.up.railway.app/admin/courses")
@@ -418,8 +419,9 @@ const AdminCourses = () => {
             </div>
           )}
 
+          {selectedCourse !== null && (
           <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
-            <h2 className="mb-6 text-black">All Courses</h2>
+            <h2 className="mb-6 text-black">Topics of "{selectedCourse.Course_name}"</h2>
             <div style={{ width: topicsTable.getCenterTotalSize() }}>
               {topicsTable.getRowModel().rows.length > 0 ? (
                 <>
@@ -471,13 +473,13 @@ const AdminCourses = () => {
                 </>
               ) : (
                 <div className="flex">
-                  <div className="flex-1 text-left border border-gray-600 p-2">
+                  <div className="flex-1 text-left p-2">
                     Topics have not been uploaded yet
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </div>)}
         </main>
       </div>
     </div>
