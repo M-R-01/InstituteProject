@@ -119,7 +119,7 @@ router.get("/faculty", (req, res) => {
     LEFT JOIN 
         Courses c ON f.FID = c.FID
     LEFT JOIN 
-        Reviews r ON f.FID = r.FID
+        Course_Reviewer r ON f.FID = r.FID
     GROUP BY 
         f.FID, f.Faculty_Name, f.Faculty_Qualification, f.Faculty_department, f.Faculty_Institution`,
     (err, result) => {
