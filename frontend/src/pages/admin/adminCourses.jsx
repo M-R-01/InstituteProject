@@ -20,6 +20,7 @@ const AdminCourses = () => {
 
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [availableReviewers, setAvailableReviewers] = useState([]);
+  const [topics, setTopics] = useState([]);
 
   const [assignReviewer, setAssignReviewer] = useState(false);
 
@@ -43,6 +44,18 @@ const AdminCourses = () => {
       })
       .catch((error) => {
         console.error("Error fetching selected course:", error);
+      });
+  };
+
+  const getCourseTopics = (CID) => {
+    axios
+      .get(`https://instituteproject.up.railway.app/admin/get-topics/${CID}`)
+      .then((response) => {
+        setTopics(response.data);
+        console.log("Course topics:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching course topics:", error);
       });
   };
 
@@ -72,7 +85,7 @@ const AdminCourses = () => {
       .catch((error) => {
         console.error("Error assigning reviewer:", error);
       });
-  }
+  };
 
   const coursesColumns = [
     {
@@ -81,7 +94,10 @@ const AdminCourses = () => {
       cell: (props) => (
         <p
           className="cursor-pointer hover:underline"
-          onClick={() => getSelectedCourse(props.row.original.CID)}
+          onClick={() => {
+            getSelectedCourse(props.row.original.CID);
+            getCourseTopics(props.row.original.CID);
+          }}
         >
           {props.getValue()}
         </p>
@@ -150,7 +166,8 @@ const AdminCourses = () => {
     {
       header: "Assign Reviewer",
       cell: (props) => (
-        <button className="bg-green-700 hover:bg-green-700 text-white p-2 rounded-lg w-1/2"
+        <button
+          className="bg-green-700 hover:bg-green-700 text-white p-2 rounded-lg w-1/2"
           onClick={() => {
             assignReviewerToCourse(props.row.original.FID, selectedCourse.CID);
           }}
@@ -160,6 +177,29 @@ const AdminCourses = () => {
       ),
     },
   ];
+
+  const topicsColumns = [
+    {
+      header: "Topic Name",
+      accessorKey: "File_name",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "File Type",
+      accessorKey: "File_type",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "File Link",
+      accessorKey: "File_link",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "Uploaded At",
+      accessorKey: "Uploaded_at",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+  ]
 
   const coursesTable = useReactTable({
     data: courses,
@@ -172,6 +212,14 @@ const AdminCourses = () => {
   const reviewersTable = useReactTable({
     data: availableReviewers,
     columns: reviewersColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  const topicsTable = useReactTable({
+    data: topics,
+    columns: topicsColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -258,7 +306,7 @@ const AdminCourses = () => {
           </div>
 
           {selectedCourse !== null && (
-            <div className="bg-white p-8 text-black rounded-lg shadow-md width-3xl mt-10">
+            <div className="bg-white mt-4 p-8 text-black rounded-lg shadow-md width-3xl mt-10">
               <div className="flex justify-content">
                 <div className="flex flex-col w-1/2">
                   <div className="text-left mb-4">
@@ -369,6 +417,67 @@ const AdminCourses = () => {
               )}
             </div>
           )}
+
+          <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
+            <h2 className="mb-6 text-black">All Courses</h2>
+            <div style={{ width: topicsTable.getCenterTotalSize() }}>
+              {topicsTable.getRowModel().rows.length > 0 ? (
+                <>
+                  {topicsTable.getHeaderGroups().map((headerGroup) => (
+                    <div key={headerGroup.id} className="flex">
+                      {headerGroup.headers.map((header) => (
+                        <div
+                          key={header.id}
+                          style={{ width: header.getSize() }}
+                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                        >
+                          {header.column.columnDef.header}
+                          {header.column.getCanSort() && (
+                            <FaSort onClick={header.column.getToggleSortingHandler()} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {topicsTable.getRowModel().rows.map((row) => (
+                    <div key={row.id} className="flex">
+                      {row.getVisibleCells().map((cell) => (
+                        <div
+                          key={cell.id}
+                          style={{ width: cell.column.getSize() }}
+                          className="text-left border border-gray-600 p-2"
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  <p>
+                    Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
+                    {topicsTable.getPageCount()}
+                  </p>
+                  <button
+                    className="border border-gray-600 text-15"
+                    onClick={topicsTable.getState().pagination.previousPage}
+                  >
+                    {"<"}
+                  </button>
+                  <button
+                    className="border border-gray-600 text-15"
+                    onClick={topicsTable.getState().pagination.nextPage}
+                  >
+                    {">"}
+                  </button>
+                </>
+              ) : (
+                <div className="flex">
+                  <div className="flex-1 text-left border border-gray-600 p-2">
+                    Topics have not been uploaded yet
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </main>
       </div>
     </div>
