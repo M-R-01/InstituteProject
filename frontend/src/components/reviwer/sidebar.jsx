@@ -1,6 +1,6 @@
 import React from 'react';
 import { GiTeacher } from "react-icons/gi";
-import { IoHome, IoSettingsOutline } from 'react-icons/io5';
+import { IoHome } from 'react-icons/io5';
 import { BiLogOut } from 'react-icons/bi';
 import { FaBars } from 'react-icons/fa6';
 
