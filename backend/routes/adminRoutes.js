@@ -231,4 +231,30 @@ router.get("/available-reviewers", (req, res) => {
   );
 });
 
+router.get("/check-feedbacks", (req, res) => {
+  db.query(
+    `SELECT
+    c.CID, 
+    c.Course_Name, 
+    cr.FID AS Reviewer, 
+    fi.File_name, 
+    f.Faculty_Email AS Reviewer_Email
+FROM
+    Courses c 
+JOIN
+    Course_Reviewer cr ON c.CID = cr.CID 
+JOIN 
+    Files fi ON c.CID = fi.File_id
+JOIN
+    Faculty f ON cr.FID = f.FID
+LEFT JOIN 
+    Feedback fd ON fi.File_id = fd.File_id AND cr.FID = fd.FID
+WHERE 
+    fd.File_id IS NULL;`,
+  (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+})
+
 export default router;
