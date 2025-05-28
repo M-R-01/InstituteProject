@@ -26,7 +26,7 @@ router.get("topics-to-review/:CID", (req, res) => {
     const { CID } = req.params;
     db.query(
         `SELECT
-            f.File_name,f.File_link,f.File_type,f.Uploaded_at
+            f.File_id,f.File_name,f.File_link,f.File_type,f.Uploaded_at
         FROM
             Files f
         LEFT JOIN 
