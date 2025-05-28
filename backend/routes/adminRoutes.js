@@ -296,6 +296,10 @@ router.post("/send-all-reminders", (req, res) => {
     return res.status(400).json({ error: "Feedbacks array is required" });
   }
   console.log("Sending reminders for feedbacks:", feedbacks);
+  feedbacks.forEach((feedback) => {
+    const { courseName, fileName, reviewerEmail } = feedback;
+    // Here you would implement the logic to send the reminder email for each feedback
+  });
 })
 
 export default router;
