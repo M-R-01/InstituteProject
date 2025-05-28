@@ -14,6 +14,20 @@ router.get("/:email", (req, res) => {
   });
 });
 
+router.get("/courses/:facultyId", (req, res) => {
+  const { facultyId } = req.params;
+
+  // Validate inputs
+  if (!facultyId) {
+    return res.status(400).json({ error: "Faculty ID required" });
+  }
+
+  db.query("SELECT * FROM Courses WHERE FID = ?", [facultyId], (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+});
+
 router.post("/submit-for-approval", (req, res) => {
   const { courseName, courseDescription, facultyId } = req.body;
 
@@ -66,5 +80,7 @@ router.get("/get-topics/:courseId", (req, res) => {
     res.json(result);
   });
 });
+
+
 
 export default router;
