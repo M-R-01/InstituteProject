@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 
-function LoginInPage() {
+const LoginInPage = () => {
   const [username, setUsername] = useState("");
 
   const [password, setPassword] = useState("");
@@ -33,7 +33,7 @@ function LoginInPage() {
           <div className="h-[3.4rem] w-[16.5rem] sm:h-[4rem] sm:w-[20rem] rounded-full flex items-center justify-center text-lg sm:text-xl space-x-2 sm:space-x-5 bg-white">
             <input
               type="text"
-              className="border-none focus:border-none bg-white text-black"
+              className="focus:outline-none bg-white text-black"
               placeholder="User Name"
               onChange={setusername}
             />
@@ -44,7 +44,7 @@ function LoginInPage() {
           <div className="h-[3.4rem] w-[16.5rem] sm:h-[4rem] sm:w-[20rem] rounded-full flex items-center justify-center text-lg sm:text-xl space-x-5 bg-white">
             <input
               type="password"
-              className="border-none focus:border-none bg-white text-black"
+              className="focus:outline-none bg-white text-black"
               placeholder="Password"
               onChange={setpassword}
             />

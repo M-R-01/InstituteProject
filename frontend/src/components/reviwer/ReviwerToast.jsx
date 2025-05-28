@@ -17,7 +17,7 @@ export const showReviewerToast = (message, type = "warning") => {
         <strong>NOTICE</strong> {message}
       </span>
     </div>,
-    { ...baseOptions, type, theme: "dark" }
+    { ...baseOptions, type, theme: "dark"}
   );
 };
 

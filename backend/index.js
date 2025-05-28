@@ -2,10 +2,14 @@
 
 import express from "express";
 import crypto from "crypto";
+import mysql from "mysql";
 import dotenv from "dotenv";
-import db from "./db.js";
 import bodyParser from "body-parser";
 import cors from "cors";
+
+import facultyRoutes from "./routes/facultyRoutes.js";
+import reviewerRoutes from "./routes/reviewerRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -15,17 +19,39 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-db.connect((err) => {
-  if (err) {
-    console.log(err);
-    return;
-  } else {
-    console.log("Connected to the MongoDB database");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  }
-});
+let db;
+
+function handleConnect() {
+  db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_DATABASE,
+    port: 3306,
+  });
+
+  db.connect((err) => {
+    if (err) {
+      console.log(err);
+      setTimeout(handleConnect, 2000);
+    } else {
+      console.log("Connected to database");
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    }
+  });
+
+  db.on("error", (err) => {
+    console.error("Database error", err);
+    if (err.code === "PROTOCOL_CONNECTION_LOST") {
+      handleConnect(); // reconnect
+    } else {
+      throw err;
+    }
+  });
+}
+handleConnect();
 
 const salt = 16;
 function hashPasswordWithSalt(password, salt) {
@@ -51,17 +77,16 @@ app.post("/register", (req, res) => {
 
   const hashedPassword = hashPasswordWithSalt(password, salt);
 
-  db.query("SELECT * FROM Faculty WHERE email =?", [email], (err, result) => {
+  db.query("SELECT * FROM Faculty WHERE Faculty_Email =?", [email], (err, result) => {
     if (err) throw err;
     if (result.length > 0) {
       return res.status(400).json({ error: "User already exists" });
     } else {
       db.query(
-        "INSERT INTO Faculty (name, qualification, email, department, institution, password, salt) VALUES(?,?,?,?,?,?,?)",
-        [name, qualification, email, department, institution, hashedPassword, salt],
+        "INSERT INTO Faculty (Faculty_Name, Faculty_Qualification, Faculty_Email, Faculty_department, Faculty_Institution, Password) VALUES(?,?,?,?,?,?)",
+        [name, qualification, email, department, institution, hashedPassword],
         (err, result) => {
           if (err) throw err;
-          console.log("User registered successfully!");
           res.json({ message: "User registered successfully!" });
         },
       );
@@ -69,45 +94,36 @@ app.post("/register", (req, res) => {
   });
 });
 
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  if (!email ||!password) {
+  if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
   const inputHashed = hashPasswordWithSalt(password, salt);
 
-  db.query(`SELECT email, password FROM Faculty WHERE email = ?`, [email], (err, result) => {
-    if (err) throw err;
-    if (result.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    } else {
-      const { password: dbHashedPassword } = result[0];
-      if (inputHashed === dbHashedPassword) {
-        return res.json({ message: "Login successful!" });
+  db.query(
+    `SELECT Faculty_Email, Password FROM Faculty WHERE Faculty_Email = ?`,
+    [email],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(401).json({ error: "Invalid email or password" });
       } else {
-        return res.status(401).json({ error: "Invalid password" });
+        const { Password: dbHashedPassword } = result[0];
+        if (inputHashed === dbHashedPassword) {
+          return res.json({ message: "Login successful!" });
+        } else {
+          return res.status(401).json({ error: "Invalid password" });
+        }
       }
-    }
-  })
+    },
+  );
 });
 
+app.use("/faculty", facultyRoutes);
+app.use("/reviewer", reviewerRoutes);
+app.use("/admin", adminRoutes);
 
-app.post("/submit-for-approval", (req, res) => {
-  const { courseName, courseDescription, facultyId } = req.body;
-
-  // Validate inputs
-  if (!courseName || !courseDescription || !facultyId) {
-    return res.status(400).json({ error: "Course name, description, and faculty ID required" });
-  }
-
-  const sql =
-    "INSERT INTO Waiting_for_approval (course_name, couse_description, faculty_id) VALUES (?,?,?)";
-
-  db.query(sql, [courseName, courseDescription, facultyId], (err, result) => {
-    if (err) throw err;
-    res.json({ message: "Course submitted for approval successfully!" });
-  });
-});
+export default db;
