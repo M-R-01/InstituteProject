@@ -3,7 +3,7 @@ import db from "../index.js";
 
 const router = express.Router();
 
-router.get("courses-to-review/:FID", (req, res) => {
+router.get("/courses-to-review/:FID", (req, res) => {
   const { FID } = req.params;
   db.query(
     `SELECT 
@@ -22,7 +22,7 @@ router.get("courses-to-review/:FID", (req, res) => {
   });
 });
 
-router.get("topics-to-review/:CID", (req, res) => {
+router.get("/topics-to-review/:CID", (req, res) => {
     const { CID } = req.params;
     db.query(
         `SELECT
