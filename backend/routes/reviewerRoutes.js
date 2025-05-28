@@ -42,4 +42,20 @@ router.get("/topics-to-review/:CID", (req, res) => {
     });
 })
 
+router.post("/submit-feedback/:File_id", (req, res) => {
+    const { File_id } = req.params;
+    const { FID,CID,feedback } = req.body;
+
+    db.query(
+        `INSERT INTO 
+            Feedback (File_id, FID, CID, feedback) 
+        VALUES (?, ?, ?, ?)`, 
+            [CID, FID, File_id, feedback], (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: "Failed to submit feedback" });
+            }
+            res.json({ message: "Feedback submitted successfully" });
+        });
+})
+
 export default router;
