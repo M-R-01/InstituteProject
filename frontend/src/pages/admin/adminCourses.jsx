@@ -24,7 +24,6 @@ const AdminCourses = () => {
 
   const [assignReviewer, setAssignReviewer] = useState(false);
 
-
   useEffect(() => {
     axios
       .get("https://instituteproject.up.railway.app/admin/courses")
@@ -129,7 +128,11 @@ const AdminCourses = () => {
       accessorKey: "Reviewer",
       cell: (props) => (
         <>
-          {props.getValue() == null ? <p className="text-red-600">No Reviewer Assigned</p> : props.getValue()}
+          {props.getValue() == null ? (
+            <p className="text-red-600">No Reviewer Assigned</p>
+          ) : (
+            props.getValue()
+          )}
         </>
       ),
     },
@@ -202,7 +205,7 @@ const AdminCourses = () => {
       accessorKey: "Uploaded_at",
       cell: (props) => <p>{props.getValue()}</p>,
     },
-  ]
+  ];
 
   const coursesTable = useReactTable({
     data: courses,
@@ -422,66 +425,65 @@ const AdminCourses = () => {
           )}
 
           {selectedCourse !== null && (
-          <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
-            <h2 className="mb-6 text-black">Topics of "{selectedCourse.Course_name}"</h2>
-            <div style={{ width: topicsTable.getCenterTotalSize() }}>
-              {topicsTable.getRowModel().rows.length > 0 ? (
-                <>
-                  {topicsTable.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          key={header.id}
-                          style={{ width: header.getSize() }}
-                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                        >
-                          {header.column.columnDef.header}
-                          {header.column.getCanSort() && (
-                            <FaSort onClick={header.column.getToggleSortingHandler()} />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  {topicsTable.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
-                      {row.getVisibleCells().map((cell) => (
-                        <div
-                          key={cell.id}
-                          style={{ width: cell.column.getSize() }}
-                          className="text-left border border-gray-600 p-2"
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  <p>
-                    Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
-                    {topicsTable.getPageCount()}
-                  </p>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={topicsTable.getState().pagination.previousPage}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={topicsTable.getState().pagination.nextPage}
-                  >
-                    {">"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left p-2">
-                    Topics have not been uploaded yet
+            <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
+              <h2 className="mb-6 text-black">Topics of "{selectedCourse.Course_name}"</h2>
+              <div style={{ width: topicsTable.getCenterTotalSize() }}>
+                {topicsTable.getRowModel().rows.length > 0 ? (
+                  <>
+                    {topicsTable.getHeaderGroups().map((headerGroup) => (
+                      <div key={headerGroup.id} className="flex">
+                        {headerGroup.headers.map((header) => (
+                          <div
+                            key={header.id}
+                            style={{ width: header.getSize() }}
+                            className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                          >
+                            {header.column.columnDef.header}
+                            {header.column.getCanSort() && (
+                              <FaSort onClick={header.column.getToggleSortingHandler()} />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                    {topicsTable.getRowModel().rows.map((row) => (
+                      <div key={row.id} className="flex">
+                        {row.getVisibleCells().map((cell) => (
+                          <div
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className="text-left border border-gray-600 p-2"
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                    <p>
+                      Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
+                      {topicsTable.getPageCount()}
+                    </p>
+                    <button
+                      className="border border-gray-600 text-15"
+                      onClick={topicsTable.getState().pagination.previousPage}
+                    >
+                      {"<"}
+                    </button>
+                    <button
+                      className="border border-gray-600 text-15"
+                      onClick={topicsTable.getState().pagination.nextPage}
+                    >
+                      {">"}
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex">
+                    <div className="flex-1 text-left p-2">Topics have not been uploaded yet</div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>)}
+          )}
         </main>
       </div>
     </div>

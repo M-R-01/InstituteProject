@@ -81,6 +81,4 @@ router.get("/get-topics/:courseId", (req, res) => {
   });
 });
 
-
-
 export default router;
