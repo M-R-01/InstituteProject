@@ -6,6 +6,7 @@ import mysql from "mysql";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
+import nodemailer from "nodemailer";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 import reviewerRoutes from "./routes/reviewerRoutes.js";
@@ -60,6 +61,15 @@ function hashPasswordWithSalt(password, salt) {
     .update(password + salt)
     .digest("hex");
 }
+
+const transporter = nodemailer.createTransport({
+  service : process.env.EMAIL_SERVICE || 'gmail',
+  auth:{
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+  }
+});
+
 
 app.post("/register", (req, res) => {
   const { name, qualification, email, department, institution, password } = req.body;
@@ -119,6 +129,168 @@ app.post("/login", (req, res) => {
         }
       }
     },
+  );
+});
+
+// Forgot Password Route
+app.post("/forgot-password", (req, res) => {
+  const { email, userType } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+  
+  if (!userType || !['faculty', 'student', 'reviewer', 'admin'].includes(userType.toLowerCase())) {
+    return res.status(400).json({ error: "Valid user type is required (faculty, student, reviewer, or admin)" });
+  }
+  
+  let tableName, emailField;
+  switch(userType.toLowerCase()) {
+    case 'faculty':
+      tableName = 'Faculty';
+      emailField = 'Faculty_Email';
+      break;
+    case 'student':
+      tableName = 'Student';
+      emailField = 'Student_Email';
+      break;
+    case 'reviewer':
+      tableName = 'Reviewer';
+      emailField = 'Reviewer_Email';
+      break;
+    case 'admin':
+      tableName = 'Admin';
+      emailField = 'Admin_Email';
+      break;
+  }
+  
+
+  db.query(`SELECT * FROM ${tableName} WHERE ${emailField} = ?`, [email], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: "Server error" });
+    }
+    
+    if (result.length === 0) {
+
+      return res.json({ message: "If the email exists, a password reset link will be sent." });
+    }
+    
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = new Date(Date.now() + 3600000); 
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    
+    db.query(
+      `UPDATE ${tableName} SET reset_token = ?, reset_token_expiry = ? WHERE ${emailField} = ?`,
+      [hashedToken, tokenExpiry, email],
+      (updateErr) => {
+        if (updateErr) {
+          console.error('Token update error:', updateErr);
+          return res.status(500).json({ error: "Server error" });
+        }
+        
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}/${userType}`;
+        
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: 'Password Reset Request',
+          html: `
+            <p>You requested a password reset for your ${userType} account.</p>
+            <p>Click <a href="${resetUrl}">here</a> to reset your password or copy and paste the following link in your browser:</p>
+            <p>${resetUrl}</p>
+            <p>This link is valid for 10 minutes.</p>
+            <p>If you didn't request this, please ignore this email.</p>
+          `
+        };
+        
+        transporter.sendMail(mailOptions, (emailErr) => {
+          if (emailErr) {
+            console.error('Email sending error:', emailErr);
+            return res.status(500).json({ error: "Error sending email" });
+          }
+          
+          res.json({ message: "Password reset link sent to email" });
+        });
+      }
+    );
+  });
+});
+
+// Reset Password Route
+app.post("/reset-password/:token/:userType", (req, res) => {
+  const { token, userType } = req.params;
+  const { password } = req.body;
+  
+  if (!password) {
+    return res.status(400).json({ error: "New password is required" });
+  }
+  
+  if (!userType || !['faculty', 'student', 'reviewer', 'admin'].includes(userType.toLowerCase())) {
+    return res.status(400).json({ error: "Valid user type is required" });
+  }
+  
+  let tableName, emailField, passwordField;
+  switch(userType.toLowerCase()) {
+    case 'faculty':
+      tableName = 'Faculty';
+      emailField = 'Faculty_Email';
+      passwordField = 'Password';
+      break;
+    case 'student':
+      tableName = 'Student';
+      emailField = 'Student_Email';
+      passwordField = 'Password';
+      break;
+    case 'reviewer':
+      tableName = 'Reviewer';
+      emailField = 'Reviewer_Email';
+      passwordField = 'Password';
+      break;
+    case 'admin':
+      tableName = 'Admin';
+      emailField = 'Admin_Email';
+      passwordField = 'Password';
+      break;
+  }
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+  
+  db.query(
+    `SELECT * FROM ${tableName} WHERE reset_token = ? AND reset_token_expiry > ?`,
+    [hashedToken, new Date()],
+    (err, result) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: "Server error" });
+      }
+      
+      if (result.length === 0) {
+        return res.status(400).json({ error: "Invalid or expired token" });
+      }
+      
+      const hashedPassword = hashPasswordWithSalt(password, salt);
+
+      db.query(
+        `UPDATE ${tableName} SET ${passwordField} = ?, reset_token = NULL, reset_token_expiry = NULL WHERE ${emailField} = ?`,
+        [hashedPassword, result[0][emailField]],
+        (updateErr) => {
+          if (updateErr) {
+            console.error('Password update error:', updateErr);
+            return res.status(500).json({ error: "Server error" });
+          }
+          
+          res.json({ message: "Password reset successful" });
+        }
+      );
+    }
   );
 });
 
