@@ -1,6 +1,6 @@
 import React from 'react';
 import { GiTeacher } from "react-icons/gi";
-import { IoHome, IoSettingsOutline } from 'react-icons/io5';
+import { IoHome } from 'react-icons/io5';
 import { BiLogOut } from 'react-icons/bi';
 import { FaBars } from 'react-icons/fa6';
 
@@ -42,12 +42,7 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Assigned Course</span>
               </a>
             </li>
-            <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
-                <IoSettingsOutline className="inline-block w-6 h-6 mr-2 -mt-2 " />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Settings</span>
-              </a>
-            </li>
+
           </ul>
         </div>
 

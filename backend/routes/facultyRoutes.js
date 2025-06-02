@@ -14,6 +14,20 @@ router.get("/:email", (req, res) => {
   });
 });
 
+router.get("/courses/:facultyId", (req, res) => {
+  const { facultyId } = req.params;
+
+  // Validate inputs
+  if (!facultyId) {
+    return res.status(400).json({ error: "Faculty ID required" });
+  }
+
+  db.query("SELECT * FROM Courses WHERE FID = ?", [facultyId], (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+});
+
 router.post("/submit-for-approval", (req, res) => {
   const { courseName, courseDescription, facultyId } = req.body;
 
@@ -33,6 +47,7 @@ router.post("/submit-for-approval", (req, res) => {
 
 router.post("/new-topic", (req, res) => {
   const { courseId, file_name, file_type, file_link } = req.body;
+  console.log("Request received:", req.body);
 
   // Validate inputs
   if (!courseId || !file_name || !file_type || !file_link) {
@@ -40,7 +55,10 @@ router.post("/new-topic", (req, res) => {
   }
 
   db.query(
-    "INSERT INTO Files (CID, file_name, file_type, file_link, uploaded_at) VALUES (?, ?, ?, ?,CURDATE())",
+    `INSERT INTO 
+    Files 
+    (File_Id, CID, File_name, File_type, File_link, Uploaded_at) 
+    VALUES (?, ?, ?, ?, CURDATE())`,
     [courseId, file_name, file_type, file_link],
     (err, result) => {
       if (err) throw err;
