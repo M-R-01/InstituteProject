@@ -231,4 +231,75 @@ router.get("/available-reviewers", (req, res) => {
   );
 });
 
+router.get("/check-feedbacks", (req, res) => {
+  db.query(
+    `SELECT
+    c.CID, 
+    c.Course_Name, 
+    cr.FID AS Reviewer, 
+    fi.File_name, 
+    f.Faculty_Email AS Reviewer_Email
+    FROM
+        Courses c 
+    JOIN
+        Course_Reviewer cr ON c.CID = cr.CID 
+    JOIN 
+        Files fi ON c.CID = fi.File_id
+    JOIN
+        Faculty f ON cr.FID = f.FID
+    LEFT JOIN 
+        Feedback fd ON fi.File_id = fd.File_id AND cr.FID = fd.FID
+    WHERE 
+        fd.File_id IS NULL;`,
+    (err, result) => {
+      if (err) throw err;
+      res.json(result);
+    },
+  );
+});
+
+router.post("/send-reminder", (req, res) => {
+  const { courseName, fileName, reviewerEmail } = req.body;
+
+  // Validate inputs
+  if (!courseName || !fileName || !reviewerEmail) {
+    return res.status(400).json({ error: "Course name, file name, and reviewer email required" });
+  }
+
+  db.query(
+    `SELECT 
+      c.Course_name, 
+      f.Faculty_Email 
+    FROM 
+      Courses c 
+    JOIN 
+      Course_Reviewer cr ON c.CID = cr.CID 
+    JOIN 
+      Faculty f ON cr.FID = f.FID 
+    WHERE 
+      c.CID = ? AND f.Faculty_Email = ?`,
+    [courseId, reviewerEmail],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(404).json({ error: "Course or reviewer not found" });
+      }
+      // Here you would implement the logic to send the reminder email.
+      res.json({ message: "Reminder sent successfully!" });
+    },
+  );
+})
+
+router.post("/send-all-reminders", (req, res) => {
+  const feedbacks = req.body.feedbacks;
+  if (!Array.isArray(feedbacks) || feedbacks.length === 0) {
+    return res.status(400).json({ error: "Feedbacks array is required" });
+  }
+  console.log("Sending reminders for feedbacks:", feedbacks);
+  feedbacks.forEach((feedback) => {
+    const { courseName, fileName, reviewerEmail } = feedback;
+    // Here you would implement the logic to send the reminder email for each feedback
+  });
+})
+
 export default router;

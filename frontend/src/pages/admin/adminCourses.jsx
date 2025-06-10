@@ -128,7 +128,9 @@ const AdminCourses = () => {
       header: "Reviewer",
       accessorKey: "Reviewer",
       cell: (props) => (
-        <p>{props.getValue() == null ? "No Reviewer Assigned" : props.getValue()}</p>
+        <>
+          {props.getValue() == null ? <p className="text-red-600">No Reviewer Assigned</p> : props.getValue()}
+        </>
       ),
     },
     {
