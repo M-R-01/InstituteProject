@@ -1,6 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
+const navigate = useNavigate();
 
 const LoginInPage = () => {
   const [username, setUsername] = useState("");
@@ -8,8 +13,23 @@ const LoginInPage = () => {
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(username, password);
+    axios.post("https://instituteproject.up.railway.app/login", {
+      email: username,
+      password: password,
+    })
+    .then((response) => {
+      const data = response.data;
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/roleselection");
+      } else {
+        alert("Login failed. Please check your credentials.");
+      }
+    })
+    .catch((error) => {
+      console.error("There was an error logging in!", error);
+    });
   };
 
   const setusername = (e) => {

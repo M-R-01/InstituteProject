@@ -6,6 +6,7 @@ import mysql from "mysql";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 
 import facultyRoutes from "./routes/facultyRoutes.js";
 import reviewerRoutes from "./routes/reviewerRoutes.js";
@@ -62,10 +63,18 @@ function hashPasswordWithSalt(password, salt) {
 }
 
 app.post("/register", (req, res) => {
-  const { name, qualification, email, department, institution, password } = req.body;
+  const { name, qualification, email, department, institution, password } =
+    req.body;
 
   // Validate inputs
-  if (!name || !qualification || !email || !department || !institution || !password) {
+  if (
+    !name ||
+    !qualification ||
+    !email ||
+    !department ||
+    !institution ||
+    !password
+  ) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -77,21 +86,25 @@ app.post("/register", (req, res) => {
 
   const hashedPassword = hashPasswordWithSalt(password, salt);
 
-  db.query("SELECT * FROM Faculty WHERE Faculty_Email =?", [email], (err, result) => {
-    if (err) throw err;
-    if (result.length > 0) {
-      return res.status(400).json({ error: "User already exists" });
-    } else {
-      db.query(
-        "INSERT INTO Faculty (Faculty_Name, Faculty_Qualification, Faculty_Email, Faculty_department, Faculty_Institution, Password) VALUES(?,?,?,?,?,?)",
-        [name, qualification, email, department, institution, hashedPassword],
-        (err, result) => {
-          if (err) throw err;
-          res.json({ message: "User registered successfully!" });
-        },
-      );
+  db.query(
+    "SELECT * FROM Faculty WHERE Faculty_Email =?",
+    [email],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length > 0) {
+        return res.status(400).json({ error: "User already exists" });
+      } else {
+        db.query(
+          "INSERT INTO Faculty (Faculty_Name, Faculty_Qualification, Faculty_Email, Faculty_department, Faculty_Institution, Password) VALUES(?,?,?,?,?,?)",
+          [name, qualification, email, department, institution, hashedPassword],
+          (err, result) => {
+            if (err) throw err;
+            res.json({ message: "User registered successfully!" });
+          }
+        );
+      }
     }
-  });
+  );
 });
 
 app.post("/login", (req, res) => {
@@ -113,12 +126,25 @@ app.post("/login", (req, res) => {
       } else {
         const { Password: dbHashedPassword } = result[0];
         if (inputHashed === dbHashedPassword) {
-          return res.json({ message: "Login successful!" });
+          const token = jwt.sign(
+            {
+              email: result[0].Faculty_Email,
+            },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: "1h",
+            },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: "process.env.JWT_EXPIRATION",
+            }
+          );
+          return res.json({message: "Login Successfull", token });
         } else {
           return res.status(401).json({ error: "Invalid password" });
         }
       }
-    },
+    }
   );
 });
 

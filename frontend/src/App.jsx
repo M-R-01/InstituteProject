@@ -10,7 +10,7 @@ import HomePage from './pages/faculty/home.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import CourseSelectionPage from './pages/NewCoursePage.jsx'
 import NewCoursePage from './pages/NewCoursePage.jsx'
-import VideoUploadPage from './pages/faculty/courseupload.jsx'
+import VideoUploadPage from './pages/faculty/fileupload.jsx'
 
 
 
