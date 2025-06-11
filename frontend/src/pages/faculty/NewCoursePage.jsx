@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import Logo1 from '../assets/courselaptopimage.png'
-import Logo2 from '../assets/courseimagemobile.png'
+import Logo1 from '../../assets/courselaptopimage.png'
+import Logo2 from '../../assets/courseimagemobile.png'
 
 function NewCoursePage() {
   const [courseName, setCourseName] = useState("");

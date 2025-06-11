@@ -139,7 +139,7 @@ app.post("/login", (req, res) => {
               expiresIn: "process.env.JWT_EXPIRATION",
             }
           );
-          return res.json({message: "Login Successfull", token });
+          return res.json({message: "Login Successfull", token, user: { email: result[0].Faculty_Email }});
         } else {
           return res.status(401).json({ error: "Invalid password" });
         }

@@ -8,8 +8,7 @@ import AdminFaculty from './pages/admin/adminFaculty.jsx'
 import RoleSelectionPage from './pages/RoleSelectionPage.jsx'
 import HomePage from './pages/faculty/home.jsx'
 import SignupPage from './pages/SignupPage.jsx'
-import CourseSelectionPage from './pages/NewCoursePage.jsx'
-import NewCoursePage from './pages/NewCoursePage.jsx'
+import NewCoursePage from './pages/faculty/NewCoursePage.jsx'
 import VideoUploadPage from './pages/faculty/fileupload.jsx'
 
 
@@ -22,7 +21,6 @@ function App() {
       <Route path="/" element={<LoginInPage />} />
       <Route path='/roleselection' element={<RoleSelectionPage/>}/>
       <Route path='/faculty/home' element={<HomePage/>}/>
-      <Route path='/newcourse' element={<CourseSelectionPage/>}/>
       <Route path='/admin' element={<AdminLogin/>}/>
       <Route path="/admin/home" element={<AdminHome/>}/> 
       <Route path="/admin/courses" element={<AdminCourses/>}/>
