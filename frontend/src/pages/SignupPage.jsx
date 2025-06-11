@@ -37,7 +37,7 @@ const SignupPage = () => {
       name: name,
       email: email,
       password: password,
-      institute: college,
+      institution: college,
       qualification: qualification,
       department: department
     })

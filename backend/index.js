@@ -65,8 +65,6 @@ function hashPasswordWithSalt(password, salt) {
 app.post("/register", (req, res) => {
   const { name, qualification, email, department, institution, password } =
     req.body;
-  console.log(req.body);
-  console.log("Registering user:", name, qualification, email, department, institution, password);
   // Validate inputs
   if (
     !name ||
