@@ -8,18 +8,22 @@ const HomePage = () => {
   const [faculty, setFaculty] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/faculty/:email')
-     .then(response => {
-        setFaculty(response.data);
-      })
-     .catch(error => {
-        console.log(error);
-      });
+    axios.get('https://instituteproject.up.railway.app/faculty', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    .then(response => {
+      setFaculty(response.data);
+    })
+    .catch(error => {
+      console.error("There was an error fetching the faculty data!", error);
+    });
   },[]);
 
   return (
     <div className="flex">
-      <Sidebar sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} />
+      <Sidebar sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} username={JSON.parse(localStorage.getItem("user")).email || "username"}/>
       <div className={`flex-1 min-h-screen transition-all duration-300 ${sidebarToggle ? "ml-0" : "md:ml-60"}`}>
         <nav className="fixed top-0 left-0 w-full md:w-[calc(100%-16rem)] md:ml-64 bg-white shadow-md p-4 flex justify-between items-center z-10">
           <button className="md:hidden text-2xl text-black" onClick={() => setSidebarToggle(!sidebarToggle)}>

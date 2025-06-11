@@ -1,9 +1,10 @@
 import express from "express";
 import db from "../index.js";
+import verifyToken from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/:email", (req, res) => {
+router.get("/:email", verifyToken, (req, res) => {
   const { email } = req.params;
   db.query("SELECT * FROM Faculty WHERE Faculty_Email =?", [email], (err, result) => {
     if (err) throw err;

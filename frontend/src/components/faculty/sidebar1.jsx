@@ -4,7 +4,7 @@ import { IoHome, IoSettingsOutline } from 'react-icons/io5';
 import { BiLogOut } from 'react-icons/bi';
 import { FaBars } from 'react-icons/fa6';
 
-const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
+const Sidebar = ({ sidebarToggle, setSidebarToggle, username }) => {
   return (
     <div>
       <button
@@ -25,7 +25,7 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
           
           <h1 className="text-xl text-black font-bold md:block">
             Hello,
-            <p>Username!!</p>
+            <p>{username}</p>
           </h1>
 
           
