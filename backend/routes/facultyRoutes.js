@@ -15,7 +15,7 @@ router.get("/:email", verifyToken, (req, res) => {
   });
 });
 
-router.get("/courses/:facultyId", (req, res) => {
+router.get("/courses/:facultyId", verifyToken, (req, res) => {
   const { facultyId } = req.params;
 
   // Validate inputs
