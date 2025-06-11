@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
   const [name, setname] = useState("");
@@ -8,11 +10,45 @@ const SignupPage = () => {
   const [confirmPassword, setconfirmPassword] = useState("");
   const [college, setcollege] = useState("");
   const [qualification, setqualification] = useState("");
+  const [department, setdepartment] = useState("");
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(name, email, password, confirmPassword, college, qualification);
-  // };
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    
+    if (!name || !email || !college || !qualification || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    console.log(name, email, password, college, qualification, department);
+
+    axios.post("https://instituteproject.up.railway.app/register", {
+      name: name,
+      email: email,
+      password: password,
+      institute: college,
+      qualification: qualification,
+      department: department
+    })
+    .then((response) => {
+      if (response.data.message) {
+        setShowTerms(true);
+      } else {
+        alert("Signup failed. Please try again.");
+      }
+    })
+  }
 
   const handleNameChange = (e) => {
     setname(e.target.value);
@@ -38,12 +74,11 @@ const SignupPage = () => {
     setqualification(e.target.value);
   };
 
-  const [showTerms, setShowTerms] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowTerms(true);
+  const handleDepartmentChange = (e) => {
+    setdepartment(e.target.value);
   };
+
+  const [showTerms, setShowTerms] = useState(false);
 
 
   return (
@@ -127,6 +162,23 @@ const SignupPage = () => {
               </div>
             </div>
 
+            {/* Department */}
+            <div className="sm:h-[3.5rem] sm:w-4/5 h-[2.8rem] w-2/3 mx-auto sm:mt-5 mt-6 ">
+              <h2 className="text-[#2B193D] text-xl font-bold">
+                Department-
+              </h2>
+              <div className="h-[2rem] w-full border-b-2">
+                <input
+                  type="text"
+                  onChange={handleDepartmentChange}
+                  value={department}
+                  placeholder="CSE"
+                  className="bg-white focus:outline-none text-[#B98389] text-[1.2rem] w-full"
+                />
+              </div>
+            </div>
+            
+
             {/*  Password */}
             <div className="sm:h-[3.5rem] sm:w-4/5 h-[2.8rem] w-2/3 mx-auto sm:mt-5 mt-6 ">
               <h2 className="text-[#2B193D] text-xl font-bold">
@@ -191,15 +243,7 @@ const SignupPage = () => {
                     <button
                       onClick={() => {
                         setShowTerms(false);
-                        alert("Signup completed and terms agreed!");
-                        console.log({
-                          name,
-                          email,
-                          password,
-                          confirmPassword,
-                          college,
-                          qualification,
-                        });
+                        navigate("/login");
                       }}
                       className="px-4 py-2 bg-blue-600 text-white rounded-md"
                     >
