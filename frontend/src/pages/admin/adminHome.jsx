@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar2";
 import { FaBars, FaSort } from "react-icons/fa";
 import axios from "axios";
+import { showAdminToast,AdminToastContainer } from "../../components/admin/AdminToast";
 
 import {
   getCoreRowModel,
@@ -66,6 +67,7 @@ const AdminHome = () => {
       })
       .then((response) => {
         console.log("Course approved:", response.data);
+        showAdminToast("Course approved successfully", "success");
       });
   };
 
@@ -91,6 +93,7 @@ const AdminHome = () => {
       })
       .then((response) => {
         console.log("Reminder sent:", response.data);
+        showAdminToast("Reminder sent successfully", "success");
       });
   };
 

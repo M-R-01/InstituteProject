@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar2";
 import axios from "axios";
 import { FaBars, FaSort } from "react-icons/fa";
+import { showAdminToast, AdminToastContainer } from "../../components/admin/AdminToast";
 
 import {
   getCoreRowModel,
@@ -79,7 +80,7 @@ const AdminCourses = () => {
         reviewer: reviewer,
       })
       .then((response) => {
-        console.log("Reviewer assigned successfully:", response.data);
+        showAdminToast("Reviewer assigned successfully", "success");
         setAssignReviewer(false);
         setSelectedCourse(null);
       })
