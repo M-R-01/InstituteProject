@@ -15,15 +15,15 @@ router.get("/:email", verifyToken, (req, res) => {
   });
 });
 
-router.get("/courses/:facultyId", verifyToken, (req, res) => {
-  const { facultyId } = req.params;
+router.get("/courses/:facultyEmail", verifyToken, (req, res) => {
+  const { facultyEmail } = req.params;
 
   // Validate inputs
-  if (!facultyId) {
+  if (!facultyEmail) {
     return res.status(400).json({ error: "Faculty ID required" });
   }
 
-  db.query("SELECT * FROM Courses WHERE FID = ?", [facultyId], (err, result) => {
+  db.query("SELECT * FROM Courses WHERE Faculty_Email = ?", [facultyEmail], (err, result) => {
     if (err) throw err;
     res.json(result);
   });

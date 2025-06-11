@@ -21,7 +21,7 @@ const HomePage = () => {
       console.error("There was an error fetching the faculty data!", error);
     });
 
-    axios.get(`https://instituteproject.up.railway.app/faculty/courses/${faculty.FID}`, {
+    axios.get(`https://instituteproject.up.railway.app/faculty/courses/${email}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
