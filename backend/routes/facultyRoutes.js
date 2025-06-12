@@ -47,6 +47,15 @@ router.post("/submit-for-approval", verifyToken, (req, res) => {
   });
 });
 
+router.get("/waiting-for-approval", verifyToken, (req, res) => {
+  const FID = req.user.FID;
+
+  db.query("SELECT * FROM Waiting_for_approval WHERE FID = ?", [FID], (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+})
+
 router.post("/new-topic", verifyToken, (req, res) => {
   const { courseId, file_name, file_type, file_link } = req.body;
   console.log("Request received:", req.body);

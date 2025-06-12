@@ -5,12 +5,20 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { GrAdd } from "react-icons/gr";
 
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  flexRender,
+} from "@tanstack/react-table";
+
 const HomePage = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
   const [faculty, setFaculty] = useState([]);
+  const [waitingCourses, setWaitingCourses] = useState([]);
 
   const email = localStorage.getItem("email");
-  const FID = localStorage.getItem("FID");
 
   useEffect(() => {
     axios
@@ -27,15 +35,37 @@ const HomePage = () => {
       });
 
     axios
-      .get(`https://instituteproject.up.railway.app/faculty/courses/${FID}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get(
+        `https://instituteproject.up.railway.app/faculty/waiting-for-approval`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((response) => {
-        console.log(response.data);
+        setWaitingCourses(response.data);
       });
   }, []);
+
+  const waitingColumns = [
+    {
+      header: "Course Name",
+      accessorKey: "Course_name",
+    },
+    {
+      header: "Course Description",
+      accessorKey: "Course_description",
+    },
+  ];
+
+  const waitingTable = useReactTable({
+    data: waitingCourses,
+    columns: waitingColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   return (
     <div className="flex">
@@ -83,13 +113,76 @@ const HomePage = () => {
 
           <div className="mt-10 bg-white p-8 rounded-lg shadow-md">
             <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
-              <Link to='/faculty/newcourse'>
+              <Link to="/faculty/newcourse">
                 <div className="flex items-center">
                   <GrAdd className="mr-2" />
                   Add New Course
                 </div>
               </Link>
             </button>
+            <h2>Courses Waiting For Approval</h2>
+            <div style={{ width: waitingTable.getCenterTotalSize()}} className="text-black">
+              {waitingTable.getRowModel().rows.length > 0 ? (
+                <>
+                  {waitingTable.getHeaderGroups().map((headerGroup) => (
+                    <div key={headerGroup.id} className="flex">
+                      {headerGroup.headers.map((header) => (
+                        <div
+                          key={header.id}
+                          style={{ width: header.getSize() }}
+                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                        >
+                          {header.column.columnDef.header}
+                          {header.column.getCanSort() && (
+                            <FaSort
+                              onClick={header.column.getToggleSortingHandler()}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {waitingTable.getRowModel().rows.map((row) => (
+                    <div key={row.id} className="flex">
+                      {row.getVisibleCells().map((cell) => (
+                        <div
+                          key={cell.id}
+                          style={{ width: cell.column.getSize() }}
+                          className="text-left border border-gray-600 p-2"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  <p>
+                    Page {waitingTable.getState().pagination.pageIndex + 1} of{" "}
+                    {waitingTable.getPageCount()}
+                  </p>
+                  <button
+                    className="border border-gray-600 text-15"
+                    onClick={waitingTable.getState().pagination.previousPage}
+                  >
+                    {"<"}
+                  </button>
+                  <button
+                    className="border border-gray-600 text-15"
+                    onClick={waitingTable.getState().pagination.nextPage}
+                  >
+                    {">"}
+                  </button>
+                </>
+              ) : (
+                <div className="flex">
+                  <div className="flex-1 text-left border border-gray-600 p-2">
+                    No courses waiting for approval
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </main>
       </div>
