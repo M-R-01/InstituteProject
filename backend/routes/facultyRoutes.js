@@ -15,7 +15,7 @@ router.get("/:email", verifyToken, (req, res) => {
   });
 });
 
-router.get("/courses/:facultyEmail", verifyToken, (req, res) => {
+router.get("/courses/:FID", verifyToken, (req, res) => {
   const { facultyEmail } = req.params;
 
   // Validate inputs
@@ -23,7 +23,7 @@ router.get("/courses/:facultyEmail", verifyToken, (req, res) => {
     return res.status(400).json({ error: "Faculty ID required" });
   }
 
-  db.query("SELECT * FROM Courses WHERE Faculty_Email = ?", [facultyEmail], (err, result) => {
+  db.query("SELECT * FROM Courses WHERE FID = ?", [facultyEmail], (err, result) => {
     if (err) throw err;
     res.json(result);
   });

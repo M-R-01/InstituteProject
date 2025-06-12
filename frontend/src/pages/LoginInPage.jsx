@@ -20,7 +20,7 @@ const LoginInPage = () => {
       const data = response.data;
       if (data.token) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("email", JSON.parse(atob(data.token.split(".")[1])).email);
         navigate("/roleselection");
       } else {
         alert("Login failed. Please check your credentials.");

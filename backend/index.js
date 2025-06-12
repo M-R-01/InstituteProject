@@ -116,7 +116,7 @@ app.post("/login", (req, res) => {
   const inputHashed = hashPasswordWithSalt(password, salt);
 
   db.query(
-    `SELECT Faculty_Email, Password FROM Faculty WHERE Faculty_Email = ?`,
+    `SELECT FID, Faculty_Email, Password FROM Faculty WHERE Faculty_Email = ?`,
     [email],
     (err, result) => {
       if (err) throw err;
@@ -127,7 +127,8 @@ app.post("/login", (req, res) => {
         if (inputHashed === dbHashedPassword) {
           const token = jwt.sign(
             {
-              email: result[0].Faculty_Email,
+              FID: result[0].FID,
+              Faculty_Email: result[0].Faculty_Email,
             },
             process.env.JWT_SECRET,
             {
@@ -138,7 +139,7 @@ app.post("/login", (req, res) => {
               expiresIn: "process.env.JWT_EXPIRATION",
             }
           );
-          return res.json({message: "Login Successfull", token, user: { email: result[0].Faculty_Email }});
+          return res.json({message: "Login Successfull", token});
         } else {
           return res.status(401).json({ error: "Invalid password" });
         }

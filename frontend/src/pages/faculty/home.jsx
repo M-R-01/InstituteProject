@@ -6,7 +6,10 @@ import axios from 'axios';
 const HomePage = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
   const [faculty, setFaculty] = useState([]);
-  const email = JSON.parse(localStorage.getItem("user")).email;
+  const email = JSON.parse(localStorage.getItem("email")).email;
+
+  const token = localStorage.getItem("token");
+  const FID = JSON.parse(atob(token.split(".")[1])).FID;
 
   useEffect(() => {
     axios.get(`https://instituteproject.up.railway.app/faculty/${email}`, {
@@ -21,7 +24,7 @@ const HomePage = () => {
       console.error("There was an error fetching the faculty data!", error);
     });
 
-    axios.get(`https://instituteproject.up.railway.app/faculty/courses/${email}`, {
+    axios.get(`https://instituteproject.up.railway.app/faculty/courses/${FID}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
