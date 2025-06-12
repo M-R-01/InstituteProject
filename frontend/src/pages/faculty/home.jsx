@@ -35,7 +35,7 @@ const HomePage = () => {
       });
 
     axios
-      .get(`https://instituteproject.up.railway.app/faculty/waiting-for-approval`,
+      .get(`https://instituteproject.up.railway.app/faculty/get-waiting-courses`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
