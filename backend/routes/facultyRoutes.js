@@ -29,11 +29,11 @@ router.get("/courses/:FID", verifyToken, (req, res) => {
   });
 });
 
-router.post("/submit-for-approval", (req, res) => {
-  const { courseName, courseDescription, facultyId } = req.body;
+router.post("/submit-for-approval", verifyToken, (req, res) => {
+  const { courseName, courseDescription, FID } = req.body;
 
   // Validate inputs
-  if (!courseName || !courseDescription || !facultyId) {
+  if (!courseName || !courseDescription || !FID) {
     return res.status(400).json({ error: "Course name, description, and faculty ID required" });
   }
 

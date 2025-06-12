@@ -1,15 +1,42 @@
 import React from "react";
 import { useState } from "react";
-import Logo1 from '../../assets/courselaptopimage.png'
-import Logo2 from '../../assets/courseimagemobile.png'
+import Logo1 from "../../assets/courselaptopimage.png";
+import Logo2 from "../../assets/courseimagemobile.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function NewCoursePage() {
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
 
+  const navigate = useNavigate();
+
+  const facultyId = localStorage.getItem("FID");
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(courseName, courseDescription);
+    axios
+      .post(
+        "https://instituteproject.up.railway.app/faculty/submit-for-approval",
+        {
+          courseName: courseName,
+          courseDescription: courseDescription,
+          FID: facultyId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        alert("Course submitted for approval successfully!");
+        navigate("/faculty/home");
+      })
+      .catch((error) => {
+        console.error("There was an error submitting the course!", error);
+        alert("Failed to submit course. Please try again.");
+      });
   };
 
   const handleCourseName = (e) => {
@@ -28,8 +55,16 @@ function NewCoursePage() {
             Choose your
           </div>
           <div className="sm:h-[25rem] h-[5.5rem] w-full sm:w-[14rem]">
-            <img src={Logo2} alt="Mobile View" className="block md:hidden h-[5.5rem] w-full px-[2.5rem]" />
-            <img src={Logo1} alt="Laptop View" className="hidden md:block h-[25rem] w-[14rem]" />
+            <img
+              src={Logo2}
+              alt="Mobile View"
+              className="block md:hidden h-[5.5rem] w-full px-[2.5rem]"
+            />
+            <img
+              src={Logo1}
+              alt="Laptop View"
+              className="hidden md:block h-[25rem] w-[14rem]"
+            />
           </div>
         </div>
         {/* Right Side */}
