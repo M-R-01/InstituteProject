@@ -45,6 +45,13 @@ const HomePage = () => {
       )
       .then((response) => {
         setWaitingCourses(response.data);
+        console.log("Waiting Courses:", response.data);
+      })
+      .catch((error) => {
+        console.error(
+          "There was an error fetching the waiting courses data!",
+          error
+        );
       });
   }, []);
 
