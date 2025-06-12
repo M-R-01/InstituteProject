@@ -6,10 +6,9 @@ import axios from 'axios';
 const HomePage = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
   const [faculty, setFaculty] = useState([]);
-  const email = JSON.parse(localStorage.getItem("email")).email;
 
-  const token = localStorage.getItem("token");
-  const FID = JSON.parse(atob(token.split(".")[1])).FID;
+  const email = localStorage.getItem('email');
+  const FID = localStorage.getItem('FID');
 
   useEffect(() => {
     axios.get(`https://instituteproject.up.railway.app/faculty/${email}`, {
