@@ -49,9 +49,10 @@ router.post("/submit-for-approval", verifyToken, (req, res) => {
 
 router.get("/waiting-for-approval", verifyToken, (req, res) => {
   const FID = req.user.FID;
-
+  console.log("Fetching waiting courses for FID:", FID);
   db.query("SELECT * FROM Waiting_for_approval WHERE FID = ?", [FID], (err, result) => {
     if (err) throw err;
+    console.log("Waiting courses fetched:", result);
     res.json(result);
   });
 })
