@@ -32,7 +32,7 @@ router.get("/courses/:FID", verifyToken, (req, res) => {
 router.post("/submit-for-approval", verifyToken, (req, res) => {
   const { courseName, courseDescription } = req.body;
   const FID = req.user.FID;
-  
+
   // Validate inputs
   if (!courseName || !courseDescription || !FID) {
     return res.status(400).json({ error: "Course name, description, and faculty ID required" });
@@ -47,7 +47,7 @@ router.post("/submit-for-approval", verifyToken, (req, res) => {
   });
 });
 
-router.post("/new-topic", (req, res) => {
+router.post("/new-topic", verifyToken, (req, res) => {
   const { courseId, file_name, file_type, file_link } = req.body;
   console.log("Request received:", req.body);
 
