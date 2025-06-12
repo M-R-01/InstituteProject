@@ -11,8 +11,6 @@ function NewCoursePage() {
 
   const navigate = useNavigate();
 
-  const facultyId = localStorage.getItem("FID");
-
   const handleSubmit = (e) => {
     axios
       .post(
@@ -20,7 +18,6 @@ function NewCoursePage() {
         {
           courseName: courseName,
           courseDescription: courseDescription,
-          FID: facultyId,
         },
         {
           headers: {

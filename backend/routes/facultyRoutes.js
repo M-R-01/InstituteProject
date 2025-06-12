@@ -30,8 +30,9 @@ router.get("/courses/:FID", verifyToken, (req, res) => {
 });
 
 router.post("/submit-for-approval", verifyToken, (req, res) => {
-  const { courseName, courseDescription, FID } = req.body;
-
+  const { courseName, courseDescription } = req.body;
+  const FID = req.user.FID;
+  
   // Validate inputs
   if (!courseName || !courseDescription || !FID) {
     return res.status(400).json({ error: "Course name, description, and faculty ID required" });
@@ -40,7 +41,7 @@ router.post("/submit-for-approval", verifyToken, (req, res) => {
   const sql =
     "INSERT INTO Waiting_for_approval (Course_name, Course_description, FID) VALUES (?,?,?)";
 
-  db.query(sql, [courseName, courseDescription, facultyId], (err, result) => {
+  db.query(sql, [courseName, courseDescription, FID], (err, result) => {
     if (err) throw err;
     res.json({ message: "Course submitted for approval successfully!" });
   });
