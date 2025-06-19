@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 
 const LoginInPage = () => {
@@ -11,8 +11,9 @@ const LoginInPage = () => {
 
   const navigate = useNavigate();
 
+
   const handleSubmit = (e) => {
-    axios.post("https://instituteproject.up.railway.app/login", {
+    axios.post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/login", {
       email: username,
       password: password,
     })
@@ -46,9 +47,9 @@ const LoginInPage = () => {
       <div className="h-[30rem] w-full sm:h-[30rem] sm:w-[50rem] flex flex-col items-center justify-center space-y-2 sm:space-y-4">
         <div className="flex space-x-3 text-md sm:text-lg">
           <div className="text-black">Don't have an account?</div>
-          <a href="/" className="underline text-purple-700">
+          <Link to="/signup" className="underline text-purple-700">
             Signup Now
-          </a>
+          </Link>
         </div>
         <div className="h-[3.6rem] w-[16.7rem] sm:h-[4.2rem] sm:w-[20.2rem] rounded-full flex items-center justify-center bg-gradient-to-r from-[#78F6F7] via-[#576BD7] to-[#3E01BF]">
           <div className="h-[3.4rem] w-[16.5rem] sm:h-[4rem] sm:w-[20rem] rounded-full flex items-center justify-center text-lg sm:text-xl space-x-2 sm:space-x-5 bg-white">

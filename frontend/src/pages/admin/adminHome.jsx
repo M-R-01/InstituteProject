@@ -27,7 +27,7 @@ const AdminHome = () => {
 
   useEffect(() => {
     axios
-      .get("https://instituteproject.up.railway.app/admin/metrics")
+      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/metrics")
       .then((response) => {
         setCourseCount(response.data.courseCount);
         setFacultyCount(response.data.facultyCount);
@@ -39,7 +39,7 @@ const AdminHome = () => {
       });
 
     axios
-      .get("https://instituteproject.up.railway.app/admin/get-waiting-courses")
+      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-waiting-courses")
       .then((response) => {
         setWaitingCourses(response.data);
       })
@@ -48,7 +48,7 @@ const AdminHome = () => {
       });
 
     axios
-      .get("https://instituteproject.up.railway.app/admin/check-feedbacks")
+      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/check-feedbacks")
       .then((response) => {
         setPendingFeedbacks(response.data);
       })
@@ -60,7 +60,7 @@ const AdminHome = () => {
   {/* Functions to handle course approval */}
   const handleApprove = (row) => {
     axios
-      .post("https://instituteproject.up.railway.app/admin/approve-waiting-courses", {
+      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses", {
         courseName: row.Course_name,
         courseDescription: row.Course_description,
         status: "approved",
@@ -73,7 +73,7 @@ const AdminHome = () => {
 
   const handleReject = (row) => {
     axios
-      .post("https://instituteproject.up.railway.app/admin/approve-waiting-courses", {
+      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses", {
         courseName: row.Course_name,
         courseDescription: row.Course_description,
         status: "rejected",
@@ -86,7 +86,7 @@ const AdminHome = () => {
   {/*Functions to send reminder to reviewers*/}
   const sendReminder = (row) => {
     axios
-      .post("https://instituteproject.up.railway.app/admin/send-reminder", {
+      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder", {
         courseName: row.Course_Name,
         fileName: row.File_name,
         reviewerEmail: row.Reviewer_Email,
@@ -100,7 +100,7 @@ const AdminHome = () => {
   const sendReminderAll = () => {
     pendingFeedbacks.forEach((row) => {
       axios
-        .post("https://instituteproject.up.railway.app/admin/send-reminder", {
+        .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder", {
           feedbacks: pendingFeedbacks
         })
         .then((response) => {

@@ -28,7 +28,7 @@ const AdminCourses = () => {
 
   useEffect(() => {
     axios
-      .get("https://instituteproject.up.railway.app/admin/courses")
+      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses")
       .then((response) => {
         setCourses(response.data);
       })
@@ -39,7 +39,7 @@ const AdminCourses = () => {
 
   const getSelectedCourse = (CID) => {
     axios
-      .get(`https://instituteproject.up.railway.app/admin/course/${CID}`)
+      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`)
       .then((response) => {
         setSelectedCourse(response.data);
         console.log("Selected course:", response.data);
@@ -51,7 +51,7 @@ const AdminCourses = () => {
 
   const getCourseTopics = (CID) => {
     axios
-      .get(`https://instituteproject.up.railway.app/admin/get-topics/${CID}`)
+      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`)
       .then((response) => {
         setTopics(response.data);
         console.log("Course topics:", response.data);
@@ -63,7 +63,7 @@ const AdminCourses = () => {
 
   const getAvailableReviewers = () => {
     axios
-      .get("https://instituteproject.up.railway.app/admin/available-reviewers")
+      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers")
       .then((response) => {
         setAvailableReviewers(response.data);
         console.log("Available reviewers:", response.data);
@@ -75,7 +75,7 @@ const AdminCourses = () => {
 
   const assignReviewerToCourse = (reviewer, courseId) => {
     axios
-      .post("https://instituteproject.up.railway.app/admin/assign-reviewers", {
+      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers", {
         courseId: courseId,
         reviewer: reviewer,
       })

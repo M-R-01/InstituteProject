@@ -33,7 +33,7 @@ const SignupPage = () => {
 
     console.log(name, email, password, college, qualification, department);
 
-    axios.post("https://instituteproject.up.railway.app/register", {
+    axios.post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/register", {
       name: name,
       email: email,
       password: password,

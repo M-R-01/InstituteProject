@@ -6,18 +6,21 @@ const router = express.Router();
 
 router.get("/:email", verifyToken, (req, res) => {
   const { email } = req.params;
-  db.query("SELECT * FROM Faculty WHERE Faculty_Email =?", [email], (err, result) => {
-    if (err) throw err;
-    if (result.length === 0) {
-      return res.status(404).json({ error: "Faculty not found" });
-    }
-    res.json(result[0]);
-  });
+  db.query(
+    "SELECT * FROM Faculty WHERE Faculty_Email =?",
+    [email],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(404).json({ error: "Faculty not found" });
+      }
+      return res.json(result[0]);
+    },
+  );
 });
 
 router.get("/courses/:FID", verifyToken, (req, res) => {
-  const { FID } = req.params;
-
+  const FID = req.user.FID;
   // Validate inputs
   if (!FID) {
     return res.status(400).json({ error: "Faculty ID required" });
@@ -29,13 +32,52 @@ router.get("/courses/:FID", verifyToken, (req, res) => {
   });
 });
 
+router.get("/course/:CID", verifyToken, (req, res) => {
+  const { CID } = req.params;
+  db.query(
+    `SELECT 
+      c.CID,
+      c.Course_name,
+      c.Course_description,
+      f.Faculty_Name,
+      rf.Faculty_Name AS Reviewer,
+      COALESCE(fc.file_count, 0) AS File_Count
+    FROM 
+      Courses c
+    JOIN 
+      Faculty f ON c.FID = f.FID
+    LEFT JOIN 
+      Course_Reviewer r ON c.CID = r.CID
+    LEFT JOIN 
+      Faculty rf ON r.FID = rf.FID
+    LEFT JOIN (
+      SELECT 
+        CID, 
+        COUNT(*) AS file_count
+      FROM 
+        Files
+      GROUP BY 
+        CID
+    ) fc ON c.CID = fc.CID
+    WHERE 
+      c.CID = ?`,
+    [CID],
+    (err, result) => {
+      if (err) throw err;
+      res.json(result[0]);
+    },
+  );
+});
+
 router.post("/submit-for-approval", verifyToken, (req, res) => {
   const { courseName, courseDescription } = req.body;
   const FID = req.user.FID;
 
   // Validate inputs
   if (!courseName || !courseDescription || !FID) {
-    return res.status(400).json({ error: "Course name, description, and faculty ID required" });
+    return res
+      .status(400)
+      .json({ error: "Course name, description, and faculty ID required" });
   }
 
   const sql =
@@ -47,31 +89,35 @@ router.post("/submit-for-approval", verifyToken, (req, res) => {
   });
 });
 
-router.get("/get-waiting-courses", verifyToken, (req, res) => {
+router.get("/waiting-courses/:FID", verifyToken, (req, res) => {
   const FID = req.user.FID;
-  console.log("Fetching waiting courses for FID:", FID);
-  db.query("SELECT * FROM Waiting_for_approval WHERE FID = ?", [FID], (err, result) => {
-    if (err) throw err;
-    console.log("Waiting courses fetched:", result);
-    res.json(result);
-  });
-})
+  db.query(
+    "SELECT * FROM Waiting_for_approval WHERE FID = ?",
+    [FID],
+    (err, result) => {
+      if (err) throw err;
+      res.json(result);
+    },
+  );
+});
 
-router.post("/new-topic", verifyToken, (req, res) => {
-  const { courseId, file_name, file_type, file_link } = req.body;
-  console.log("Request received:", req.body);
-
+router.post("/new-topic/:CID", verifyToken, (req, res) => {
+  const { fileName, fileType, fileLink } = req.body;
+  const { CID } = req.params;
+  console.log("Course ID:", CID);
   // Validate inputs
-  if (!courseId || !file_name || !file_type || !file_link) {
-    return res.status(400).json({ error: "Course ID, file type, and file link required" });
+  if (!CID || !fileName || !fileType || !fileLink) {
+    return res
+      .status(400)
+      .json({ error: "Course ID, file type, and file link required" });
   }
 
   db.query(
     `INSERT INTO 
     Files 
-    (File_Id, CID, File_name, File_type, File_link, Uploaded_at) 
+    (CID, File_name, File_type, File_link, Uploaded_at) 
     VALUES (?, ?, ?, ?, CURDATE())`,
-    [courseId, file_name, file_type, file_link],
+    [CID, fileName, fileType, fileLink],
     (err, result) => {
       if (err) throw err;
       res.json({ message: "New topic added successfully!" });
@@ -92,7 +138,5 @@ router.get("/get-topics/:courseId", (req, res) => {
     res.json(result);
   });
 });
-
-
 
 export default router;

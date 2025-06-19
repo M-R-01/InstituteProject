@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/faculty/sidebar1";
-import { FaChevronDown, FaBars } from "react-icons/fa";
+import { FaChevronDown, FaBars, FaSort } from "react-icons/fa";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { GrAdd } from "react-icons/gr";
@@ -22,7 +22,7 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get(`https://instituteproject.up.railway.app/faculty/${email}`, {
+      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -35,22 +35,17 @@ const HomePage = () => {
       });
 
     axios
-      .get(`https://instituteproject.up.railway.app/faculty/get-waiting-courses`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
+      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/waiting-courses/${localStorage.getItem("FID")}`,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
       .then((response) => {
+        console.log(response.data);
         setWaitingCourses(response.data);
-        console.log("Waiting Courses:", response.data);
       })
       .catch((error) => {
-        console.error(
-          "There was an error fetching the waiting courses data!",
-          error
-        );
+        console.error(error);
       });
   }, []);
 
@@ -58,6 +53,7 @@ const HomePage = () => {
     {
       header: "Course Name",
       accessorKey: "Course_name",
+      cell: (props) => (<p>{props.getValue()}</p>)
     },
     {
       header: "Course Description",
@@ -117,7 +113,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="mt-10 bg-white p-8 rounded-lg shadow-md">
+          <div className="mt-10 bg-white p-8 rounded-lg shadow-md max-w-3xl">
             <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
               <Link to="/faculty/newcourse">
                 <div className="flex items-center">

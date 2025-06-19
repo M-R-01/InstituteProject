@@ -1,101 +1,79 @@
 import React, { useState } from "react";
-import Sidebar from "../../components/faculty/sidebar1" 
+import { useNavigate, useParams } from "react-router-dom";
+import Sidebar from "../../components/faculty/sidebar1";
+import axios from "axios";
 
 const VideoUploadPage = () => {
-  const [videoTitle, setVideoTitle] = useState("");
-  const [topics, setTopics] = useState("");
-  const [transcript, setTranscript] = useState("");
+  const [fileName, setFileName] = useState("");
   const [embedLink, setEmbedLink] = useState("");
-  const [videoFile, setVideoFile] = useState(null);
+  const [fileType, setFileType] = useState("");
 
-  const convertToEmbedLink = (link) => {
-    try {
-      const url = new URL(link);
-      if (url.hostname.includes("youtube.com") && url.searchParams.get("v")) {
-        return `https://www.youtube.com/embed/${url.searchParams.get("v")}`;
-      } else if (url.hostname === "youtu.be") {
-        return `https://www.youtube.com/embed/${url.pathname.slice(1)}`;
-      } else {
-        return link;
-      }
-    } catch {
-      return link;
-    }
-  };
+  const navigate = useNavigate();
+  const { CID } = useParams();
 
-  const isFormValid = () => {
-    return (
-      videoTitle.trim() !== "" &&
-      topics.trim() !== "" &&
-      (videoFile || embedLink)
-    );
-  };
+  const [sidebarToggle, setSidebarToggle] = useState(false);
+
+  const email = localStorage.getItem("email");
 
   const handleSubmit = () => {
-    if (!isFormValid()) {
-      alert("Please fill all required fields.");
-      return;
-    }
-
-    const finalEmbedLink = convertToEmbedLink(embedLink);
-    const formData = new FormData();
-    formData.append("title", videoTitle);
-    formData.append("topics", topics);
-    formData.append("transcript", transcript);
-    if (videoFile) formData.append("videoFile", videoFile);
-    if (embedLink) formData.append("embedLink", finalEmbedLink);
-
-    fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => {
-        if (res.ok) alert("Uploaded successfully");
-        else alert("Upload failed!!");
+    axios
+      .post(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/new-topic/${CID}`, {
+        fileName: fileName,
+        fileLink: embedLink,
+        fileType: fileType,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
       })
-      .catch((err) => alert("Error uploading: " + err));
+      .then((response) => {
+        console.log("File uploaded successfully:", response.data);
+        navigate("/faculty/courses");
+      })
+      .catch((error) => {
+        console.error("Error uploading file:", error);
+        alert("Failed to upload file. Please try again.");
+      });
   };
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar
+        sidebarToggle={sidebarToggle}
+        setSidebarToggle={setSidebarToggle}
+        username={email || "username"}
+      />
       <div className="flex-1 p-6 bg-gray-100">
-        <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-          <h2 className="text-2xl font-semibold mb-6">Upload Course Video</h2>
+        <div className="max-w-3xl text-black mx-auto bg-white p-6 rounded shadow">
+          <h2 className="text-2xl font-semibold mb-6">Upload File</h2>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium">Video Title *</label>
+            <label className="block text-sm font-medium">File Name</label>
             <input
               type="text"
-              value={videoTitle}
-              onChange={(e) => setVideoTitle(e.target.value)}
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
               className="w-full mt-1 px-4 py-2 border rounded"
               placeholder="Enter video title"
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium">Topics Covered *</label>
-            <textarea
-              value={topics}
-              onChange={(e) => setTopics(e.target.value)}
+            <label className="block text-sm font-medium">File Type</label>
+            <select
+              name="File Type"
               className="w-full mt-1 px-4 py-2 border rounded"
-              placeholder="List the topics covered"
-            />
+              id="options"
+              value={fileType}
+              onChange={(e) => setFileType(e.target.value)}
+            >
+              <option value=".mp4">.mp4</option>
+              <option value=".pdf">.pdf</option>
+            </select>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium">Transcript (Optional)</label>
-            <textarea
-              value={transcript}
-              onChange={(e) => setTranscript(e.target.value)}
-              className="w-full mt-1 px-4 py-2 border rounded"
-              placeholder="Enter transcript here (if any)"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium">Embed Link (Optional)</label>
+            <label className="block text-sm font-medium">File Link</label>
             <input
               type="text"
               value={embedLink}
@@ -105,22 +83,9 @@ const VideoUploadPage = () => {
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium">Upload Video File (Optional)</label>
-            <input
-              type="file"
-              accept="video/*"
-              onChange={(e) => setVideoFile(e.target.files[0])}
-              className="mt-1"
-            />
-          </div>
-
           <button
             onClick={handleSubmit}
-            disabled={!isFormValid()}
-            className={`w-full py-2 text-white font-semibold rounded ${
-              isFormValid() ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
-            }`}
+            className={`w-full py-2 text-white font-semibold rounded bg-blue-600 hover:bg-blue-700`}
           >
             Upload
           </button>

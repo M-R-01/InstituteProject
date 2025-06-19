@@ -14,7 +14,7 @@ function NewCoursePage() {
   const handleSubmit = (e) => {
     axios
       .post(
-        "https://instituteproject.up.railway.app/faculty/submit-for-approval",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/submit-for-approval",
         {
           courseName: courseName,
           courseDescription: courseDescription,

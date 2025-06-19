@@ -3,8 +3,20 @@ import { GiTeacher } from "react-icons/gi";
 import { IoHome, IoSettingsOutline } from 'react-icons/io5';
 import { BiLogOut } from 'react-icons/bi';
 import { FaBars } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ sidebarToggle, setSidebarToggle, username }) => {
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    localStorage.removeItem("FID");
+    navigate("/");
+  }
+
   return (
     <div>
       <button
@@ -31,33 +43,25 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle, username }) => {
           
           <ul className="mt-3 text-black font-bold py-3">
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
+              <Link to={"/faculty/home"} className=" px-3">
                 <IoHome className="inline-block w-6 h-6 mr-2 -mt-2" />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Home</span>
-              </a>
+              </Link>
             </li>
             <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
+              <Link to={"/faculty/courses"} className=" px-3">
                 <GiTeacher className="inline-block w-6 h-6 mr-2 -mt-2" />
                 <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>My Course</span>
-              </a>
-            </li>
-            <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
-                <IoSettingsOutline className="inline-block w-6 h-6 mr-2 -mt-2 " />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Settings</span>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
 
         
-        <div className="absolute bottom-0  p-4 rounded hover:shadow hover:bg-red-300  ">
-          <a href="#" className=" p-3">
+        <button className="absolute bottom-0  p-4 rounded hover:shadow hover:bg-red-300 text-left" onClick={logout}>
             <BiLogOut className="inline-block w-6 h-6 mr-2 -mt-2" />
             <span className={`${sidebarToggle ? 'block' : "hidden"} md:block`}>Log-out!</span>
-          </a>
-        </div>
+        </button>
     </div>
     </div>
   );
