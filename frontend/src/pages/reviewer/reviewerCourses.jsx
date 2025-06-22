@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/faculty/sidebar1";
 import { FaChevronDown, FaBars, FaSort } from "react-icons/fa";
-import { GrAdd } from "react-icons/gr";
-import { Link } from "react-router-dom";
 import Nav from "../../components/nav";
 
 import {
@@ -15,20 +13,19 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const FacultyCourses = () => {
+const ReviewerCourses = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [topics, setTopics] = useState([]);
-  const navigate = useNavigate();
 
   const email = localStorage.getItem("email");
+  const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/courses/${localStorage.getItem(
-          "FID"
-        )}`,
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/courses-to-review`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -36,10 +33,11 @@ const FacultyCourses = () => {
         }
       )
       .then((response) => {
+        console.log(response.data);
         setCourses(response.data);
       })
       .catch((error) => {
-        console.error("There was an error fetching the courses!", error);
+        console.error("There was an error fetching the courses data!", error);
       });
   }, []);
 
@@ -54,18 +52,26 @@ const FacultyCourses = () => {
         }
       )
       .then((response) => {
+        console.log(response.data);
         setSelectedCourse(response.data);
-        console.log("Selected course:", response.data);
       })
       .catch((error) => {
-        console.error("Error fetching selected course:", error);
+        console.error(
+          "There was an error fetching the selected course data!",
+          error
+        );
       });
   };
 
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/get-topics/${CID}`
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/topics-to-review/${CID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       )
       .then((response) => {
         setTopics(response.data);
@@ -76,7 +82,7 @@ const FacultyCourses = () => {
       });
   };
 
-  const columns = [
+  const courseColumns = [
     {
       header: "Course Name",
       accessorKey: "Course_name",
@@ -93,14 +99,14 @@ const FacultyCourses = () => {
       ),
     },
     {
-      header: "Course Description",
-      accessorKey: "Course_description",
+      header: "Total Files",
+      accessorKey: "total_files",
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "Created At",
-      accessorKey: "created_at",
-      cell: (props) => <p>{new Date(props.getValue()).toLocaleDateString()}</p>,
+      header: "Pending Files",
+      accessorKey: "files_without_feedback",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
   ];
 
@@ -121,23 +127,88 @@ const FacultyCourses = () => {
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "Uploaded At",
-      accessorKey: "Uploaded_at",
-      cell: (props) => <p>{props.getValue()}</p>,
+      header: "Actions",
+      accessorKey: "actions",
+      cell: (props) => (
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            console.log("Action clicked for topic:", props.row.original);
+          }}
+        >
+          <Link to={`/viewfile/${props.row.original.File_id}`}>
+            View Review
+          </Link>
+        </button>
+      ),
     },
   ];
 
+  const pendingColumns = [
+    {
+      header: "Topic Name",
+      accessorKey: "File_name",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "File Type",
+      accessorKey: "File_type",
+      cell: (props) => <p>{props.getValue()}</p>,
+    },
+    {
+      header: "File Link",
+      accessorKey: "File_link",
+      cell: (props) => <p className="">{props.getValue()}</p>,
+    },
+    {
+      header: "Deadline",
+      accessorKey: "Uploaded_at",
+      cell: (props) => (
+        <p>
+          {7 -
+            Math.floor(
+              (Date.now() - new Date(props.getValue())) / (1000 * 60 * 60 * 24)
+            )}{" "}
+          days left
+        </p>
+      ),
+    },
+    {
+      header: "Actions",
+      accessorKey: "actions",
+      cell: (props) => (
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            console.log("Action clicked for pending topic:", props.row.original);
+            navigate(`/viewfile/${props.row.original.File_id}`);
+          }}
+        >
+          Review
+        </button>
+      ),
+    },
+  ];
+
+  const courseTable = useReactTable({
+    data: courses,
+    columns: courseColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
   const topicsTable = useReactTable({
-    data: topics,
+    data: topics.filter((topic) => topic.has_feedback === "Yes"),
     columns: topicsColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const table = useReactTable({
-    data: courses,
-    columns,
+  const pendingTable = useReactTable({
+    data: topics.filter((topic) => topic.has_feedback === "No"),
+    columns: pendingColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -155,18 +226,18 @@ const FacultyCourses = () => {
           sidebarToggle ? "ml-0" : "md:ml-60"
         }`}
       >
-        <Nav PageName={"My Courses"} />
+        <Nav PageName={"Assigned Courses"} />
 
         <main className="p-10 pt-24 bg-gray-200 min-h-screen">
           <div className="mt-5 bg-white p-8 rounded-lg shadow-md max-w-3xl">
             <h2>My Courses</h2>
             <div
-              style={{ width: table.getCenterTotalSize() }}
+              style={{ width: courseTable.getCenterTotalSize() }}
               className="text-black"
             >
-              {table.getRowModel().rows.length > 0 ? (
+              {courseTable.getRowModel().rows.length > 0 ? (
                 <>
-                  {table.getHeaderGroups().map((headerGroup) => (
+                  {courseTable.getHeaderGroups().map((headerGroup) => (
                     <div key={headerGroup.id} className="flex">
                       {headerGroup.headers.map((header) => (
                         <div
@@ -184,7 +255,7 @@ const FacultyCourses = () => {
                       ))}
                     </div>
                   ))}
-                  {table.getRowModel().rows.map((row) => (
+                  {courseTable.getRowModel().rows.map((row) => (
                     <div key={row.id} className="flex">
                       {row.getVisibleCells().map((cell) => (
                         <div
@@ -201,18 +272,18 @@ const FacultyCourses = () => {
                     </div>
                   ))}
                   <p>
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {courseTable.getState().pagination.pageIndex + 1} of{" "}
+                    {courseTable.getPageCount()}
                   </p>
                   <button
                     className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.previousPage}
+                    onClick={courseTable.getState().pagination.previousPage}
                   >
                     {"<"}
                   </button>
                   <button
                     className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.nextPage}
+                    onClick={courseTable.getState().pagination.nextPage}
                   >
                     {">"}
                   </button>
@@ -269,14 +340,76 @@ const FacultyCourses = () => {
               <h2 className="mb-6 text-black">
                 Topics of "{selectedCourse.Course_name}"
               </h2>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
-                <Link to={`/faculty/fileupload/${selectedCourse.CID}`}>
-                  <div className="flex items-center">
-                    <GrAdd className="mr-2" />
-                    Upload new Topics
+              <div style={{ width: pendingTable.getCenterTotalSize() }}>
+                {pendingTable.getRowModel().rows.length > 0 ? (
+                  <>
+                    {pendingTable.getHeaderGroups().map((headerGroup) => (
+                      <div key={headerGroup.id} className="flex">
+                        {headerGroup.headers.map((header) => (
+                          <div
+                            key={header.id}
+                            style={{ width: header.getSize() }}
+                            className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                          >
+                            {header.column.columnDef.header}
+                            {header.column.getCanSort() && (
+                              <FaSort
+                                onClick={header.column.getToggleSortingHandler()}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                    {pendingTable.getRowModel().rows.map((row) => (
+                      <div key={row.id} className="flex">
+                        {row.getVisibleCells().map((cell) => (
+                          <div
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className="text-left border border-gray-600 p-2"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                    <p>
+                      Page {pendingTable.getState().pagination.pageIndex + 1} of{" "}
+                      {pendingTable.getPageCount()}
+                    </p>
+                    <button
+                      className="border border-gray-600 text-15"
+                      onClick={pendingTable.getState().pagination.previousPage}
+                    >
+                      {"<"}
+                    </button>
+                    <button
+                      className="border border-gray-600 text-15"
+                      onClick={pendingTable.getState().pagination.nextPage}
+                    >
+                      {">"}
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex">
+                    <div className="flex-1 text-left p-2">
+                      Topics have not been uploaded yet
+                    </div>
                   </div>
-                </Link>
-              </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {selectedCourse !== null && (
+            <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
+              <h2 className="mb-6 text-black">
+                Topics of "{selectedCourse.Course_name}"
+              </h2>
               <div style={{ width: topicsTable.getCenterTotalSize() }}>
                 {topicsTable.getRowModel().rows.length > 0 ? (
                   <>
@@ -347,4 +480,4 @@ const FacultyCourses = () => {
   );
 };
 
-export default FacultyCourses;
+export default ReviewerCourses;

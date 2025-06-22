@@ -139,4 +139,29 @@ router.get("/get-topics/:courseId", (req, res) => {
   });
 });
 
+router.get("/get-topic/:File_Id", verifyToken, (req, res) => {
+  const { File_Id } = req.params;
+  db.query(
+    `SELECT * FROM Files WHERE File_id = ?`,
+    [File_Id],
+    (err, result) => {
+      if (err) throw err;
+      res.json(result[0]);
+    },
+  );
+});
+
+router.get("/get-feedback/:File_Id", verifyToken, (req, res) => {
+  const { File_Id } = req.params;
+  db.query(
+    `SELECT
+    feedback FROM Feedback WHERE File_id = ?`,
+    [File_Id],
+    (err, result) => {
+      if (err) throw err;
+      res.json(result[0]);
+    }
+  )
+})
+
 export default router;

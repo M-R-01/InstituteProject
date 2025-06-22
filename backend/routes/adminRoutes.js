@@ -244,7 +244,7 @@ router.get("/check-feedbacks", (req, res) => {
     JOIN
         Course_Reviewer cr ON c.CID = cr.CID 
     JOIN 
-        Files fi ON c.CID = fi.File_id
+        Files fi ON c.CID = fi.CID
     JOIN
         Faculty f ON cr.FID = f.FID
     LEFT JOIN 

@@ -4,19 +4,20 @@ import LoginInPage from './pages/LoginInPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import RoleSelectionPage from './pages/RoleSelectionPage.jsx'
 
+import ViewFile from './pages/viewFile.jsx'
+
 import AdminLogin from './pages/admin/adminLogin.jsx'
 import AdminHome from './pages/admin/adminHome.jsx'
 import AdminCourses from './pages/admin/adminCourses.jsx'
 import AdminFaculty from './pages/admin/adminFaculty.jsx'
-
 
 import HomePage from './pages/faculty/facultyHome.jsx'
 import FacultyCourses from './pages/faculty/facultyCourses.jsx'
 import NewCoursePage from './pages/faculty/NewCoursePage.jsx'
 import VideoUploadPage from './pages/faculty/fileupload.jsx'
 
-
-
+import ReviewerHome from './pages/reviewer/reviewerHome.jsx'
+import ReviewerCourses from './pages/reviewer/reviewerCourses.jsx'
 
 function App() {
   return (
@@ -35,6 +36,10 @@ function App() {
       <Route path='/faculty/courses' element={<FacultyCourses/>}/>
       <Route path="/faculty/newcourse" element={<NewCoursePage/>}/>
       <Route path="/faculty/fileupload/:CID" element={<VideoUploadPage/>}/>
+
+      <Route path='/reviewer/home' element={<ReviewerHome/>}/>
+      <Route path='/reviewer/courses' element={<ReviewerCourses/>}/>
+      <Route path="/viewfile/:fileId" element={<ViewFile/>}/>
     </Routes>
     </>
 

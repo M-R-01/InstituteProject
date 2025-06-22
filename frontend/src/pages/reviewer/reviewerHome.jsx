@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
 import Sidebar from "../../components/faculty/sidebar1";
 import { FaChevronDown, FaBars, FaSort } from "react-icons/fa";
-import axios from "axios";
 import { Link } from "react-router-dom";
-import { GrAdd } from "react-icons/gr";
 import Nav from "../../components/nav";
 
 import {
@@ -14,61 +15,85 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const HomePage = () => {
+const ReviewerHome = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
-  const [faculty, setFaculty] = useState([]);
-  const [waitingCourses, setWaitingCourses] = useState([]);
+  const [faculty, setFaculty] = useState({});
+  const [pendingFeedbacks, setPendingFeedbacks] = useState([]);
 
   const email = localStorage.getItem("email");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get(
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((response) => {
         setFaculty(response.data);
       })
       .catch((error) => {
         console.error("There was an error fetching the faculty data!", error);
+        navigate("/login");
       });
 
     axios
-      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/waiting-courses/${localStorage.getItem("FID")}`,{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get(
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/pending-feedbacks/${localStorage.getItem(
+          "FID"
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((response) => {
         console.log(response.data);
-        setWaitingCourses(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
+        setPendingFeedbacks(response.data);
       });
   }, []);
 
-  const waitingColumns = [
+  const columns = [
     {
-      header: "Course Name",
-      accessorKey: "Course_name",
-      cell: (props) => (<p>{props.getValue()}</p>)
+      header: "File Name",
+      accessorKey: "File_name",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "Course Description",
-      accessorKey: "Course_description",
+      header: "File Link",
+      accessorKey: "File_link",
+        cell: (props) => (
+            <a
+            href={props.getValue()}
+            className="text-blue-500 underline"
+            >
+            {props.getValue()}
+            </a>
+        ),
     },
-  ];
+    {
+      header: "Feedback",
+      cell: (props) => <div>
+        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            View
+        </button>
+      </div>,
+    },
+  ]
 
-  const waitingTable = useReactTable({
-    data: waitingCourses,
-    columns: waitingColumns,
+  const table = useReactTable({
+    data: pendingFeedbacks,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-  });
+  })
+
 
   return (
     <div className="flex">
@@ -102,20 +127,15 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="mt-10 bg-white p-8 rounded-lg shadow-md max-w-3xl">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
-              <Link to="/faculty/newcourse">
-                <div className="flex items-center">
-                  <GrAdd className="mr-2" />
-                  Add New Course
-                </div>
-              </Link>
-            </button>
-            <h2>Courses Waiting For Approval</h2>
-            <div style={{ width: waitingTable.getCenterTotalSize()}} className="text-black">
-              {waitingTable.getRowModel().rows.length > 0 ? (
+          <div className="mt-10 text-black bg-white p-8 rounded-lg shadow-md max-w-3xl">
+            <h2>Pending Feedbacks</h2>
+            <div
+              style={{ width: table.getCenterTotalSize() }}
+              className="text-black"
+            >
+              {table.getRowModel().rows.length > 0 ? (
                 <>
-                  {waitingTable.getHeaderGroups().map((headerGroup) => (
+                  {table.getHeaderGroups().map((headerGroup) => (
                     <div key={headerGroup.id} className="flex">
                       {headerGroup.headers.map((header) => (
                         <div
@@ -133,7 +153,7 @@ const HomePage = () => {
                       ))}
                     </div>
                   ))}
-                  {waitingTable.getRowModel().rows.map((row) => (
+                  {table.getRowModel().rows.map((row) => (
                     <div key={row.id} className="flex">
                       {row.getVisibleCells().map((cell) => (
                         <div
@@ -150,18 +170,18 @@ const HomePage = () => {
                     </div>
                   ))}
                   <p>
-                    Page {waitingTable.getState().pagination.pageIndex + 1} of{" "}
-                    {waitingTable.getPageCount()}
+                    Page {table.getState().pagination.pageIndex + 1} of{" "}
+                    {table.getPageCount()}
                   </p>
                   <button
                     className="border border-gray-600 text-15"
-                    onClick={waitingTable.getState().pagination.previousPage}
+                    onClick={table.getState().pagination.previousPage}
                   >
                     {"<"}
                   </button>
                   <button
                     className="border border-gray-600 text-15"
-                    onClick={waitingTable.getState().pagination.nextPage}
+                    onClick={table.getState().pagination.nextPage}
                   >
                     {">"}
                   </button>
@@ -181,4 +201,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default ReviewerHome;
