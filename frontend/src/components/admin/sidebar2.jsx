@@ -51,13 +51,6 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
           </ul>
         </div>
 
-        
-        <div className="absolute bottom-0 mb-5 rounded hover:shadow hover:bg-red-300  ">
-          <a href="#">
-            <BiLogOut className="w-6 h-6 mr-2 mt-2" />
-            <span className={`${sidebarToggle ? 'block' : "hidden"} md:block`}>Log-out!</span>
-          </a>
-        </div>
     </div>
     </div>
   );

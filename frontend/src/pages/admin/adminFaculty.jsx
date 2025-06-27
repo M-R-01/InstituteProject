@@ -20,7 +20,9 @@ const AdminFaculty = () => {
 
   useEffect(() => {
     axios
-      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/faculty")
+      .get(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/faculty"
+      )
       .then((response) => {
         setFacultyData(response.data);
       })
@@ -33,34 +35,45 @@ const AdminFaculty = () => {
     {
       header: "FID",
       accessorKey: "FID",
+      cell: (props) => <p>{props.getValue()}</p>,
+      size: 40,
+      enableSorting: false,
     },
     {
       header: "Faculty Name",
       accessorKey: "Faculty_Name",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
       header: "Qualification",
       accessorKey: "Faculty_Qualification",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
       header: "Department",
       accessorKey: "Faculty_department",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
       header: "Email",
       accessorKey: "Faculty_Email",
+      cell: (props) => <p>{props.getValue()}</p>,
+      
     },
     {
       header: "Institution",
       accessorKey: "Faculty_Institution",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
       header: "Courses taught",
       accessorKey: "Number_of_Courses_Taught",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
       header: "Courses Reviewed",
       accessorKey: "Number_of_Courses_Reviewed",
+      cell: (props) => <p>{props.getValue()}</p>,
     },
   ];
 
@@ -74,7 +87,10 @@ const AdminFaculty = () => {
 
   return (
     <div className="flex">
-      <Sidebar sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} />
+      <Sidebar
+        sidebarToggle={sidebarToggle}
+        setSidebarToggle={setSidebarToggle}
+      />
       <div
         className={`flex-1 min-h-screen transition-all duration-300 ${
           sidebarToggle ? "ml-0" : "md:ml-60"
@@ -91,64 +107,100 @@ const AdminFaculty = () => {
         </nav>
 
         <main className="p-10 pt-24 bg-gray-200 min-h-screen">
-          <div className="bg-white p-8 text-black rounded-lg shadow-md max-w-6xl">
-            <h2>Courses Waiting For Approval</h2>
-            <div style={{ width: table.getCenterTotalSize() }}>
-              {table.getRowModel().rows.length > 0 ? (
-                <>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          key={header.id}
-                          style={{ width: header.column.columnDef.header === "FID" ? "40px" : header.getSize() }}
-                          className="font-bold text-left flex flex-col justify-between text-white bg-[#2b193d] border border-gray-600 p-2"
-                        >
+          <div className="bg-white p-8 text-black rounded-lg shadow-md w-full overflow-auto">
+            <h2 className="mb-4">Courses Waiting For Approval</h2>
+
+            <table
+              style={{ width: table.getCenterTotalSize() }}
+              className="min-w-full table-fixed border border-gray-600"
+            >
+              <thead className="bg-[#2b193d] text-white">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        style={{
+                          width:
+                            header.column.columnDef.header === "FID"
+                              ? "40px"
+                              : header.getSize(),
+                        }}
+                        className="font-bold text-left border border-gray-600 p-2"
+                      >
+                        <div className="flex items-center justify-between">
                           {header.column.columnDef.header}
                           {header.column.getCanSort() && (
-                            <FaSort onClick={header.column.getToggleSortingHandler()} />
+                            <FaSort
+                              onClick={header.column.getToggleSortingHandler()}
+                              className="ml-1 cursor-pointer"
+                            />
                           )}
                         </div>
-                      ))}
-                    </div>
-                  ))}
-                  {table.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+
+              <tbody>
+                {table.getRowModel().rows.length > 0 ? (
+                  table.getRowModel().rows.map((row) => (
+                    <tr key={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <div
+                        <td
                           key={cell.id}
-                          style={{ width: cell.column.columnDef.header === "FID" ? "40px" : cell.column.getSize() }}
+                          style={{
+                            width:
+                              cell.column.columnDef.header === "FID"
+                                ? "40px"
+                                : cell.column.getSize(),
+                          }}
                           className="text-left text-black break-words border border-gray-600 p-2"
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
                       ))}
-                    </div>
-                  ))}
-                  <p>
-                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                  </p>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.previousPage}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.nextPage}
-                  >
-                    {">"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left border border-gray-600 p-2">
-                    No courses waiting for approval
-                  </div>
-                </div>
-              )}
-            </div>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={table.getAllColumns().length}
+                      className="text-left border border-gray-600 p-2"
+                    >
+                      No faculty data available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {table.getRowModel().rows.length > 0 && (
+              <div className="mt-2">
+                <p>
+                  Page {table.getState().pagination.pageIndex + 1} of{" "}
+                  {table.getPageCount()}
+                </p>
+                <button
+                  className="border border-gray-600 text-sm p-2 m-1"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  {"<"}
+                </button>
+                <button
+                  className="border border-gray-600 text-sm p-2 m-1"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  {">"}
+                </button>
+              </div>
+            )}
           </div>
         </main>
       </div>

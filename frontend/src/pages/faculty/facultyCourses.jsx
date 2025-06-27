@@ -91,11 +91,13 @@ const FacultyCourses = () => {
           {props.getValue()}
         </p>
       ),
+      size: 150,
     },
     {
       header: "Course Description",
       accessorKey: "Course_description",
       cell: (props) => <p>{props.getValue()}</p>,
+      size: 250,
     },
     {
       header: "Created At",
@@ -116,14 +118,19 @@ const FacultyCourses = () => {
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "File Link",
-      accessorKey: "File_link",
-      cell: (props) => <p>{props.getValue()}</p>,
-    },
-    {
       header: "Uploaded At",
       accessorKey: "Uploaded_at",
-      cell: (props) => <p>{props.getValue()}</p>,
+      cell: (props) => <p>{new Date(props.getValue()).toLocaleDateString()}</p>,
+    },
+    {
+      header: "Feedback",
+      cell: (props) => (
+        <Link to={`/viewfile/${props.row.original.File_id}`}>
+          <button className="bg-green-600 text-white px-4 py-2 rounded">
+            View Feedback
+          </button>
+        </Link>
+      ),
     },
   ];
 
@@ -158,72 +165,69 @@ const FacultyCourses = () => {
         <Nav PageName={"My Courses"} />
 
         <main className="p-10 pt-24 bg-gray-200 min-h-screen">
-          <div className="mt-5 bg-white p-8 rounded-lg shadow-md max-w-3xl">
+          <div className="mt-5 bg-white p-8 rounded-lg shadow-md w-auto overflow-auto">
             <h2>My Courses</h2>
-            <div
-              style={{ width: table.getCenterTotalSize() }}
-              className="text-black"
-            >
-              {table.getRowModel().rows.length > 0 ? (
-                <>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          key={header.id}
-                          style={{ width: header.getSize() }}
-                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                        >
-                          {header.column.columnDef.header}
-                          {header.column.getCanSort() && (
-                            <FaSort
-                              onClick={header.column.getToggleSortingHandler()}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  {table.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
-                      {row.getVisibleCells().map((cell) => (
-                        <div
-                          key={cell.id}
-                          style={{ width: cell.column.getSize() }}
-                          className="text-left border border-gray-600 p-2"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  <p>
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
-                  </p>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.previousPage}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={table.getState().pagination.nextPage}
-                  >
-                    {">"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left border border-gray-600 p-2">
-                    No courses waiting for approval
-                  </div>
-                </div>
-              )}
+            <table className="min-w-full text-black table-fixed">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        style={{ width: header.getSize() }}
+                        className="font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                      >
+                        {header.column.columnDef.header}
+                        {header.column.getCanSort() && (
+                          <FaSort
+                            onClick={header.column.getToggleSortingHandler()}
+                            className="inline ml-1 cursor-pointer"
+                          />
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        style={{ width: cell.column.getSize() }}
+                        className="text-left border border-gray-600 p-2"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="mt-2 text-black">
+              <p>
+                Page {table.getState().pagination.pageIndex + 1} of{" "}
+                {table.getPageCount()}
+              </p>
+              <button
+                className="border border-gray-600 text-sm p-1 mr-2"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {"<"}
+              </button>
+              <button
+                className="border border-gray-600 text-sm p-1"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                {">"}
+              </button>
             </div>
           </div>
 
@@ -265,81 +269,89 @@ const FacultyCourses = () => {
           )}
 
           {selectedCourse !== null && (
-            <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
-              <h2 className="mb-6 text-black">
-                Topics of "{selectedCourse.Course_name}"
-              </h2>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
-                <Link to={`/faculty/fileupload/${selectedCourse.CID}`}>
-                  <div className="flex items-center">
-                    <GrAdd className="mr-2" />
-                    Upload new Topics
-                  </div>
-                </Link>
-              </button>
-              <div style={{ width: topicsTable.getCenterTotalSize() }}>
-                {topicsTable.getRowModel().rows.length > 0 ? (
-                  <>
-                    {topicsTable.getHeaderGroups().map((headerGroup) => (
-                      <div key={headerGroup.id} className="flex">
-                        {headerGroup.headers.map((header) => (
-                          <div
-                            key={header.id}
-                            style={{ width: header.getSize() }}
-                            className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                          >
-                            {header.column.columnDef.header}
-                            {header.column.getCanSort() && (
-                              <FaSort
-                                onClick={header.column.getToggleSortingHandler()}
-                              />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                    {topicsTable.getRowModel().rows.map((row) => (
-                      <div key={row.id} className="flex">
-                        {row.getVisibleCells().map((cell) => (
-                          <div
-                            key={cell.id}
-                            style={{ width: cell.column.getSize() }}
-                            className="text-left border border-gray-600 p-2"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                    <p>
-                      Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
-                      {topicsTable.getPageCount()}
-                    </p>
-                    <button
-                      className="border border-gray-600 text-15"
-                      onClick={topicsTable.getState().pagination.previousPage}
-                    >
-                      {"<"}
-                    </button>
-                    <button
-                      className="border border-gray-600 text-15"
-                      onClick={topicsTable.getState().pagination.nextPage}
-                    >
-                      {">"}
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex">
-                    <div className="flex-1 text-left p-2">
-                      Topics have not been uploaded yet
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md w-full overflow-auto">
+  <h2 className="mb-6 text-black">
+    Topics of "{selectedCourse.Course_name}"
+  </h2>
+  
+  <Link to={`/faculty/fileupload/${selectedCourse.CID}`}>
+    <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4 flex items-center">
+      <GrAdd className="mr-2" />
+      Upload new Topics
+    </button>
+  </Link>
+
+  <table className="table-fixed min-w-full text-left border border-gray-600">
+    <thead className="bg-[#2b193d] text-white">
+      {topicsTable.getHeaderGroups().map((headerGroup) => (
+        <tr key={headerGroup.id}>
+          {headerGroup.headers.map((header) => (
+            <th
+              key={header.id}
+              style={{ width: header.getSize() }}
+              className="font-bold border border-gray-600 p-2"
+            >
+              {header.column.columnDef.header}
+              {header.column.getCanSort() && (
+                <FaSort
+                  onClick={header.column.getToggleSortingHandler()}
+                  className="inline ml-1 cursor-pointer"
+                />
+              )}
+            </th>
+          ))}
+        </tr>
+      ))}
+    </thead>
+    <tbody>
+      {topicsTable.getRowModel().rows.length > 0 ? (
+        topicsTable.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <td
+                key={cell.id}
+                style={{ width: cell.column.getSize() }}
+                className="border border-gray-600 p-2"
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={topicsTable.getAllColumns().length} className="p-2">
+            Topics have not been uploaded yet
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+
+  {topicsTable.getRowModel().rows.length > 0 && (
+    <div className="mt-2">
+      <p>
+        Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
+        {topicsTable.getPageCount()}
+      </p>
+      <button
+        className="border border-gray-600 text-sm p-1 mr-2"
+        onClick={() => topicsTable.previousPage()}
+        disabled={!topicsTable.getCanPreviousPage()}
+      >
+        {"<"}
+      </button>
+      <button
+        className="border border-gray-600 text-sm p-1"
+        onClick={() => topicsTable.nextPage()}
+        disabled={!topicsTable.getCanNextPage()}
+      >
+        {">"}
+      </button>
+    </div>
+  )}
+</div>
+
           )}
         </main>
       </div>

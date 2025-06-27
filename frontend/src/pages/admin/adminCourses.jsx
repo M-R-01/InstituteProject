@@ -2,15 +2,22 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
+
 import Sidebar from "../../components/admin/sidebar2";
+import CheckboxColumnFilter from "../../components/filterbox";
+
 import axios from "axios";
 import { FaBars, FaSort } from "react-icons/fa";
-import { showAdminToast, AdminToastContainer } from "../../components/admin/AdminToast";
+import {
+  showAdminToast,
+  AdminToastContainer,
+} from "../../components/admin/AdminToast";
 
 import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
@@ -25,10 +32,11 @@ const AdminCourses = () => {
 
   const [assignReviewer, setAssignReviewer] = useState(false);
 
-
   useEffect(() => {
     axios
-      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses")
+      .get(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses"
+      )
       .then((response) => {
         setCourses(response.data);
       })
@@ -39,7 +47,9 @@ const AdminCourses = () => {
 
   const getSelectedCourse = (CID) => {
     axios
-      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`)
+      .get(
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`
+      )
       .then((response) => {
         setSelectedCourse(response.data);
         console.log("Selected course:", response.data);
@@ -51,7 +61,9 @@ const AdminCourses = () => {
 
   const getCourseTopics = (CID) => {
     axios
-      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`)
+      .get(
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`
+      )
       .then((response) => {
         setTopics(response.data);
         console.log("Course topics:", response.data);
@@ -63,7 +75,9 @@ const AdminCourses = () => {
 
   const getAvailableReviewers = () => {
     axios
-      .get("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers")
+      .get(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers"
+      )
       .then((response) => {
         setAvailableReviewers(response.data);
         console.log("Available reviewers:", response.data);
@@ -75,10 +89,13 @@ const AdminCourses = () => {
 
   const assignReviewerToCourse = (reviewer, courseId) => {
     axios
-      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers", {
-        courseId: courseId,
-        reviewer: reviewer,
-      })
+      .post(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers",
+        {
+          courseId: courseId,
+          reviewer: reviewer,
+        }
+      )
       .then((response) => {
         showAdminToast("Reviewer assigned successfully", "success");
         setAssignReviewer(false);
@@ -104,40 +121,81 @@ const AdminCourses = () => {
           {props.getValue()}
         </p>
       ),
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Faculty Name",
       accessorKey: "Faculty_Name",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Faculty Qualification",
       accessorKey: "Faculty_Qualification",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Faculty Department",
       accessorKey: "Faculty_department",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
+
     {
       header: "Faculty Institution",
       accessorKey: "Faculty_Institution",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
+
     {
       header: "Reviewer",
       accessorKey: "Reviewer",
       cell: (props) => (
         <>
-          {props.getValue() == null ? <p className="text-red-600">No Reviewer Assigned</p> : props.getValue()}
+          {props.getValue() == null ? (
+            <p className="text-red-600">No Reviewer Assigned</p>
+          ) : (
+            props.getValue()
+          )}
         </>
       ),
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Created At",
       accessorKey: "created_at",
-      cell: (props) => <p>{props.getValue()}</p>,
+      cell: (props) => <p>{new Date(props.getValue()).toLocaleDateString()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
   ];
 
@@ -146,37 +204,62 @@ const AdminCourses = () => {
       header: "Name",
       accessorKey: "Faculty_Name",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Qualification",
       accessorKey: "Faculty_Qualification",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Department",
       accessorKey: "Faculty_department",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Institution",
       accessorKey: "Faculty_Institution",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "No. of Courses Assigned",
       accessorKey: "Number_of_Courses_Reviewing",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Assign Reviewer",
       cell: (props) => (
         <button
-          className="bg-green-700 hover:bg-green-700 text-white p-2 rounded-lg w-1/2"
+          className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-lg"
           onClick={() => {
             assignReviewerToCourse(props.row.original.FID, selectedCourse.CID);
           }}
         >
-          Assign
+          Send Request
         </button>
       ),
     },
@@ -194,16 +277,11 @@ const AdminCourses = () => {
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "File Link",
-      accessorKey: "File_link",
-      cell: (props) => <p>{props.getValue()}</p>,
-    },
-    {
       header: "Uploaded At",
       accessorKey: "Uploaded_at",
-      cell: (props) => <p>{props.getValue()}</p>,
+      cell: (props) => <p>{new Date(props.getValue()).toLocaleDateString()}</p>,
     },
-  ]
+  ];
 
   const coursesTable = useReactTable({
     data: courses,
@@ -211,6 +289,7 @@ const AdminCourses = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   const reviewersTable = useReactTable({
@@ -231,7 +310,10 @@ const AdminCourses = () => {
 
   return (
     <div className="flex">
-      <Sidebar sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} />
+      <Sidebar
+        sidebarToggle={sidebarToggle}
+        setSidebarToggle={setSidebarToggle}
+      />
       <div
         className={`flex-1 min-h-screen transition-all duration-300 ${
           sidebarToggle ? "ml-0" : "md:ml-60"
@@ -247,66 +329,99 @@ const AdminCourses = () => {
           <h1 className="text-xl font-bold text-black">Courses</h1>
         </nav>
 
-        <main className="p-10 pt-24 bg-gray-200 min-h-screen overflow-y-scroll overflow-x-scroll">
-          <div className="bg-white p-8 text-black rounded-lg text-center shadow-md max-w-auto">
-            <h2 className="mb-6 text-black">All Courses</h2>
-            <div style={{ width: coursesTable.getCenterTotalSize() }}>
-              {coursesTable.getRowModel().rows.length > 0 ? (
-                <>
-                  {coursesTable.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          key={header.id}
-                          style={{ width: header.getSize() }}
-                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                        >
+        <main className="p-10 pt-24 bg-gray-200 min-h-screen">
+          <div className="bg-white p-8 text-black rounded-lg shadow-md mt-5 w-full overflow-auto">
+            <h2 className="mb-6 text-black text-center">All Courses</h2>
+
+            <table
+              style={{ width: coursesTable.getCenterTotalSize() }}
+              className="table-fixed min-w-full border border-gray-600 text-black"
+            >
+              <thead className="bg-[#2b193d] text-white">
+                {coursesTable.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        style={{ width: header.getSize() }}
+                        className="font-bold text-left border border-gray-600 p-2"
+                      >
+                        <div className="flex items-center">
                           {header.column.columnDef.header}
                           {header.column.getCanSort() && (
-                            <FaSort onClick={header.column.getToggleSortingHandler()} />
+                            <FaSort
+                              onClick={header.column.getToggleSortingHandler()}
+                              className="inline ml-1 cursor-pointer"
+                            />
                           )}
                         </div>
-                      ))}
-                    </div>
-                  ))}
-                  {coursesTable.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
+                        {header.column.getCanFilter() && (
+                          <div className="mt-2">
+                            <CheckboxColumnFilter
+                              column={header.column}
+                              data={courses}
+                            />
+                          </div>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+
+              <tbody>
+                {coursesTable.getRowModel().rows.length > 0 ? (
+                  coursesTable.getRowModel().rows.map((row) => (
+                    <tr key={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <div
+                        <td
                           key={cell.id}
                           style={{ width: cell.column.getSize() }}
-                          className="text-left border border-gray-600 p-2"
+                          className="text-left border border-gray-600 p-2 break-words"
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
                       ))}
-                    </div>
-                  ))}
-                  <p>
-                    Page {coursesTable.getState().pagination.pageIndex + 1} of{" "}
-                    {coursesTable.getPageCount()}
-                  </p>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={coursesTable.getState().pagination.previousPage}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={coursesTable.getState().pagination.nextPage}
-                  >
-                    {">"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left border border-gray-600 p-2">
-                    No courses available
-                  </div>
-                </div>
-              )}
-            </div>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={coursesTable.getAllColumns().length}
+                      className="text-left border border-gray-600 p-2"
+                    >
+                      No courses available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {coursesTable.getRowModel().rows.length > 0 && (
+              <div className="mt-2 text-center">
+                <p>
+                  Page {coursesTable.getState().pagination.pageIndex + 1} of{" "}
+                  {coursesTable.getPageCount()}
+                </p>
+                <button
+                  className="border border-gray-600 text-sm p-2 m-1"
+                  onClick={() => coursesTable.previousPage()}
+                  disabled={!coursesTable.getCanPreviousPage()}
+                >
+                  {"<"}
+                </button>
+                <button
+                  className="border border-gray-600 text-sm p-2 m-1"
+                  onClick={() => coursesTable.nextPage()}
+                  disabled={!coursesTable.getCanNextPage()}
+                >
+                  {">"}
+                </button>
+              </div>
+            )}
           </div>
 
           {selectedCourse !== null && (
@@ -319,7 +434,9 @@ const AdminCourses = () => {
                   </div>
                   <div className="text-left mb-4">
                     <h2 className="text-black font-bold">Course Description</h2>
-                    <p className="text-black">{selectedCourse.Course_description}</p>
+                    <p className="text-black">
+                      {selectedCourse.Course_description}
+                    </p>
                   </div>
                   <div className="text-left">
                     <h2 className="text-black font-bold">No. of resources</h2>
@@ -358,131 +475,197 @@ const AdminCourses = () => {
               </div>
 
               {assignReviewer && (
-                <div className=" mt-4 text-center">
-                  <h2 className="text-black text-left">Available Reviewers</h2>
-                  <div style={{ width: reviewersTable.getCenterTotalSize() }}>
-                    {reviewersTable.getRowModel().rows.length > 0 ? (
-                      <>
+                <div className="mt-4 text-center">
+                  <h2 className="text-black text-left mb-2">
+                    Available Reviewers
+                  </h2>
+
+                  <div className="overflow-auto rounded-lg shadow-md">
+                    <table
+                      style={{ width: reviewersTable.getCenterTotalSize() }}
+                      className="min-w-full table-fixed border border-gray-600"
+                    >
+                      <thead className="bg-[#2b193d] text-white">
                         {reviewersTable.getHeaderGroups().map((headerGroup) => (
-                          <div key={headerGroup.id} className="flex">
+                          <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                              <div
+                              <th
                                 key={header.id}
                                 style={{ width: header.getSize() }}
-                                className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                                className="font-bold text-left border border-gray-600 p-2"
                               >
-                                {header.column.columnDef.header}
-                                {header.column.getCanSort() && (
-                                  <FaSort onClick={header.column.getToggleSortingHandler()} />
+                                <div className="flex items-center">
+                                  {header.column.columnDef.header}
+                                  {header.column.getCanSort() && (
+                                    <FaSort
+                                      onClick={header.column.getToggleSortingHandler()}
+                                      className="ml-1 cursor-pointer"
+                                    />
+                                  )}
+                                </div>
+                                {header.column.getCanFilter() && (
+                                  <div className="mt-2">
+                                    <CheckboxColumnFilter
+                                      column={header.column}
+                                      data={availableReviewers}
+                                    />
+                                  </div>
                                 )}
-                              </div>
+                              </th>
                             ))}
-                          </div>
+                          </tr>
                         ))}
-                        {reviewersTable.getRowModel().rows.map((row) => (
-                          <div key={row.id} className="flex">
-                            {row.getVisibleCells().map((cell) => (
-                              <div
-                                key={cell.id}
-                                style={{ width: cell.column.getSize() }}
-                                className="text-left border border-gray-600 p-2"
-                              >
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                        <p>
-                          Page {reviewersTable.getState().pagination.pageIndex + 1} of{" "}
-                          {reviewersTable.getPageCount()}
-                        </p>
-                        <button
-                          className="border border-gray-600 text-15"
-                          onClick={reviewersTable.getState().pagination.previousPage}
-                        >
-                          {"<"}
-                        </button>
-                        <button
-                          className="border border-gray-600 text-15"
-                          onClick={reviewersTable.getState().pagination.nextPage}
-                        >
-                          {">"}
-                        </button>
-                      </>
-                    ) : (
-                      <div className="flex">
-                        <div className="flex-1 text-left border border-gray-600 p-2">
-                          Reviewers Not Available
-                        </div>
-                      </div>
-                    )}
+                      </thead>
+
+                      <tbody>
+                        {reviewersTable.getRowModel().rows.length > 0 ? (
+                          reviewersTable.getRowModel().rows.map((row) => (
+                            <tr key={row.id}>
+                              {row.getVisibleCells().map((cell) => (
+                                <td
+                                  key={cell.id}
+                                  style={{ width: cell.column.getSize() }}
+                                  className="text-left border border-gray-600 p-2 break-words"
+                                >
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan={reviewersTable.getAllColumns().length}
+                              className="text-left border border-gray-600 p-2"
+                            >
+                              Reviewers Not Available
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
+
+                  {reviewersTable.getRowModel().rows.length > 0 && (
+                    <div className="mt-2">
+                      <p>
+                        Page{" "}
+                        {reviewersTable.getState().pagination.pageIndex + 1} of{" "}
+                        {reviewersTable.getPageCount()}
+                      </p>
+                      <button
+                        className="border border-gray-600 text-sm p-2 m-1"
+                        onClick={() => reviewersTable.previousPage()}
+                        disabled={!reviewersTable.getCanPreviousPage()}
+                      >
+                        {"<"}
+                      </button>
+                      <button
+                        className="border border-gray-600 text-sm p-2 m-1"
+                        onClick={() => reviewersTable.nextPage()}
+                        disabled={!reviewersTable.getCanNextPage()}
+                      >
+                        {">"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           )}
 
           {selectedCourse !== null && (
-          <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
-            <h2 className="mb-6 text-black">Topics of "{selectedCourse.Course_name}"</h2>
-            <div style={{ width: topicsTable.getCenterTotalSize() }}>
-              {topicsTable.getRowModel().rows.length > 0 ? (
-                <>
+            <div className="bg-white mt-4 p-8 text-black rounded-lg shadow-md w-full overflow-auto">
+              <h2 className="mb-6 text-black text-center">
+                Topics of "{selectedCourse.Course_name}"
+              </h2>
+
+              <table
+                style={{ width: topicsTable.getCenterTotalSize() }}
+                className="table-fixed min-w-full border border-gray-600 text-black"
+              >
+                <thead className="bg-[#2b193d] text-white">
                   {topicsTable.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
+                    <tr key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <div
+                        <th
                           key={header.id}
                           style={{ width: header.getSize() }}
-                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
+                          className="font-bold text-left border border-gray-600 p-2"
                         >
-                          {header.column.columnDef.header}
-                          {header.column.getCanSort() && (
-                            <FaSort onClick={header.column.getToggleSortingHandler()} />
-                          )}
-                        </div>
+                          <div className="flex items-center">
+                            {header.column.columnDef.header}
+                            {header.column.getCanSort() && (
+                              <FaSort
+                                onClick={header.column.getToggleSortingHandler()}
+                                className="ml-1 cursor-pointer"
+                              />
+                            )}
+                          </div>
+                        </th>
                       ))}
-                    </div>
+                    </tr>
                   ))}
-                  {topicsTable.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
-                      {row.getVisibleCells().map((cell) => (
-                        <div
-                          key={cell.id}
-                          style={{ width: cell.column.getSize() }}
-                          className="text-left border border-gray-600 p-2"
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                </thead>
+
+                <tbody>
+                  {topicsTable.getRowModel().rows.length > 0 ? (
+                    topicsTable.getRowModel().rows.map((row) => (
+                      <tr key={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className="text-left border border-gray-600 p-2 break-words"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={topicsTable.getAllColumns().length}
+                        className="text-left border border-gray-600 p-2"
+                      >
+                        Topics have not been uploaded for this course yet
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              {topicsTable.getRowModel().rows.length > 0 && (
+                <div className="mt-2 text-center">
                   <p>
                     Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
                     {topicsTable.getPageCount()}
                   </p>
                   <button
-                    className="border border-gray-600 text-15"
-                    onClick={topicsTable.getState().pagination.previousPage}
+                    className="border border-gray-600 text-sm p-2 m-1"
+                    onClick={() => topicsTable.previousPage()}
+                    disabled={!topicsTable.getCanPreviousPage()}
                   >
                     {"<"}
                   </button>
                   <button
-                    className="border border-gray-600 text-15"
-                    onClick={topicsTable.getState().pagination.nextPage}
+                    className="border border-gray-600 text-sm p-2 m-1"
+                    onClick={() => topicsTable.nextPage()}
+                    disabled={!topicsTable.getCanNextPage()}
                   >
                     {">"}
                   </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left p-2">
-                    Topics have not been uploaded yet
-                  </div>
                 </div>
               )}
             </div>
-          </div>)}
+          )}
         </main>
       </div>
     </div>

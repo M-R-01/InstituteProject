@@ -3,8 +3,7 @@ import { FaBars } from "react-icons/fa";
 import { TfiReload } from "react-icons/tfi";
 import { useNavigate } from "react-router-dom";
 
-const Nav = ({PageName}) => {
-    const [sidebarToggle, setSidebarToggle] = useState(false);
+const Nav = ({PageName, sidebarToggle, setSidebarToggle}) => {
     const role = localStorage.getItem("role");
 
     const navigate = useNavigate();

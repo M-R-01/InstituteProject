@@ -122,11 +122,6 @@ const ReviewerCourses = () => {
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "File Link",
-      accessorKey: "File_link",
-      cell: (props) => <p>{props.getValue()}</p>,
-    },
-    {
       header: "Actions",
       accessorKey: "actions",
       cell: (props) => (
@@ -156,11 +151,6 @@ const ReviewerCourses = () => {
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
-      header: "File Link",
-      accessorKey: "File_link",
-      cell: (props) => <p className="">{props.getValue()}</p>,
-    },
-    {
       header: "Deadline",
       accessorKey: "Uploaded_at",
       cell: (props) => (
@@ -177,15 +167,11 @@ const ReviewerCourses = () => {
       header: "Actions",
       accessorKey: "actions",
       cell: (props) => (
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded"
-          onClick={() => {
-            console.log("Action clicked for pending topic:", props.row.original);
-            navigate(`/viewfile/${props.row.original.File_id}`);
-          }}
-        >
-          Review
-        </button>
+        <Link to={`/viewfile/${props.row.original.File_id}`}>
+          <button className="bg-green-500 text-white px-4 py-2 rounded">
+            Review
+          </button>
+        </Link>
       ),
     },
   ];
@@ -229,36 +215,39 @@ const ReviewerCourses = () => {
         <Nav PageName={"Assigned Courses"} />
 
         <main className="p-10 pt-24 bg-gray-200 min-h-screen">
-          <div className="mt-5 bg-white p-8 rounded-lg shadow-md max-w-3xl">
-            <h2>My Courses</h2>
-            <div
+          <div className="mt-5 bg-white p-8 rounded-lg shadow-md w-full overflow-auto">
+            <table
               style={{ width: courseTable.getCenterTotalSize() }}
-              className="text-black"
+              className="table-fixed min-w-full text-black border border-gray-600"
             >
-              {courseTable.getRowModel().rows.length > 0 ? (
-                <>
-                  {courseTable.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          key={header.id}
-                          style={{ width: header.getSize() }}
-                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                        >
-                          {header.column.columnDef.header}
-                          {header.column.getCanSort() && (
-                            <FaSort
-                              onClick={header.column.getToggleSortingHandler()}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  {courseTable.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
+              <thead className="bg-[#2b193d] text-white">
+                {courseTable.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        style={{ width: header.getSize() }}
+                        className="font-bold text-left border border-gray-600 p-2"
+                      >
+                        {header.column.columnDef.header}
+                        {header.column.getCanSort() && (
+                          <FaSort
+                            onClick={header.column.getToggleSortingHandler()}
+                            className="inline ml-1 cursor-pointer"
+                          />
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+
+              <tbody>
+                {courseTable.getRowModel().rows.length > 0 ? (
+                  courseTable.getRowModel().rows.map((row) => (
+                    <tr key={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <div
+                        <td
                           key={cell.id}
                           style={{ width: cell.column.getSize() }}
                           className="text-left border border-gray-600 p-2"
@@ -267,35 +256,45 @@ const ReviewerCourses = () => {
                             cell.column.columnDef.cell,
                             cell.getContext()
                           )}
-                        </div>
+                        </td>
                       ))}
-                    </div>
-                  ))}
-                  <p>
-                    Page {courseTable.getState().pagination.pageIndex + 1} of{" "}
-                    {courseTable.getPageCount()}
-                  </p>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={courseTable.getState().pagination.previousPage}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={courseTable.getState().pagination.nextPage}
-                  >
-                    {">"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left border border-gray-600 p-2">
-                    No courses waiting for approval
-                  </div>
-                </div>
-              )}
-            </div>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={courseTable.getAllColumns().length}
+                      className="text-left border border-gray-600 p-2"
+                    >
+                      Currently, you have no courses assigned.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {courseTable.getRowModel().rows.length > 0 && (
+              <div className="mt-2 text-black">
+                <p>
+                  Page {courseTable.getState().pagination.pageIndex + 1} of{" "}
+                  {courseTable.getPageCount()}
+                </p>
+                <button
+                  className="border border-gray-600 text-sm p-1 mr-2"
+                  onClick={() => courseTable.previousPage()}
+                  disabled={!courseTable.getCanPreviousPage()}
+                >
+                  {"<"}
+                </button>
+                <button
+                  className="border border-gray-600 text-sm p-1"
+                  onClick={() => courseTable.nextPage()}
+                  disabled={!courseTable.getCanNextPage()}
+                >
+                  {">"}
+                </button>
+              </div>
+            )}
           </div>
 
           {selectedCourse !== null && (
@@ -336,105 +335,127 @@ const ReviewerCourses = () => {
           )}
 
           {selectedCourse !== null && (
-            <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
-              <h2 className="mb-6 text-black">
-                Topics of "{selectedCourse.Course_name}"
-              </h2>
-              <div style={{ width: pendingTable.getCenterTotalSize() }}>
-                {pendingTable.getRowModel().rows.length > 0 ? (
-                  <>
-                    {pendingTable.getHeaderGroups().map((headerGroup) => (
-                      <div key={headerGroup.id} className="flex">
-                        {headerGroup.headers.map((header) => (
-                          <div
-                            key={header.id}
-                            style={{ width: header.getSize() }}
-                            className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                          >
-                            {header.column.columnDef.header}
-                            {header.column.getCanSort() && (
-                              <FaSort
-                                onClick={header.column.getToggleSortingHandler()}
-                              />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                    {pendingTable.getRowModel().rows.map((row) => (
-                      <div key={row.id} className="flex">
-                        {row.getVisibleCells().map((cell) => (
-                          <div
-                            key={cell.id}
-                            style={{ width: cell.column.getSize() }}
-                            className="text-left border border-gray-600 p-2"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                    <p>
-                      Page {pendingTable.getState().pagination.pageIndex + 1} of{" "}
-                      {pendingTable.getPageCount()}
-                    </p>
-                    <button
-                      className="border border-gray-600 text-15"
-                      onClick={pendingTable.getState().pagination.previousPage}
-                    >
-                      {"<"}
-                    </button>
-                    <button
-                      className="border border-gray-600 text-15"
-                      onClick={pendingTable.getState().pagination.nextPage}
-                    >
-                      {">"}
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex">
-                    <div className="flex-1 text-left p-2">
-                      Topics have not been uploaded yet
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <div className="bg-white mt-4 p-8 text-black rounded-lg shadow-md w-full overflow-auto">
+  <h2 className="mb-6 text-black">
+    Topics of "{selectedCourse.Course_name}"
+  </h2>
+  <table
+    style={{ width: pendingTable.getCenterTotalSize() }}
+    className="table-fixed min-w-full text-black border border-gray-600"
+  >
+    <thead className="bg-[#2b193d] text-white">
+      {pendingTable.getHeaderGroups().map((headerGroup) => (
+        <tr key={headerGroup.id}>
+          {headerGroup.headers.map((header) => (
+            <th
+              key={header.id}
+              style={{ width: header.getSize() }}
+              className="font-bold text-left border border-gray-600 p-2"
+            >
+              {header.column.columnDef.header}
+              {header.column.getCanSort() && (
+                <FaSort
+                  onClick={header.column.getToggleSortingHandler()}
+                  className="inline ml-1 cursor-pointer"
+                />
+              )}
+            </th>
+          ))}
+        </tr>
+      ))}
+    </thead>
+
+    <tbody>
+      {pendingTable.getRowModel().rows.length > 0 ? (
+        pendingTable.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <td
+                key={cell.id}
+                style={{ width: cell.column.getSize() }}
+                className="text-left border border-gray-600 p-2"
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td
+            colSpan={pendingTable.getAllColumns().length}
+            className="text-left border border-gray-600 p-2"
+          >
+            No topics pending review for this course.
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+
+  {pendingTable.getRowModel().rows.length > 0 && (
+    <div className="mt-2">
+      <p>
+        Page {pendingTable.getState().pagination.pageIndex + 1} of{" "}
+        {pendingTable.getPageCount()}
+      </p>
+      <button
+        className="border border-gray-600 text-sm p-1 mr-2"
+        onClick={() => pendingTable.previousPage()}
+        disabled={!pendingTable.getCanPreviousPage()}
+      >
+        {"<"}
+      </button>
+      <button
+        className="border border-gray-600 text-sm p-1"
+        onClick={() => pendingTable.nextPage()}
+        disabled={!pendingTable.getCanNextPage()}
+      >
+        {">"}
+      </button>
+    </div>
+  )}
+</div>
+
           )}
 
           {selectedCourse !== null && (
-            <div className="bg-white mt-4 p-8 text-black rounded-lg text-center shadow-md max-w-auto">
+            <div className="bg-white mt-4 p-8 text-black rounded-lg shadow-md w-full overflow-auto">
               <h2 className="mb-6 text-black">
                 Topics of "{selectedCourse.Course_name}"
               </h2>
-              <div style={{ width: topicsTable.getCenterTotalSize() }}>
-                {topicsTable.getRowModel().rows.length > 0 ? (
-                  <>
-                    {topicsTable.getHeaderGroups().map((headerGroup) => (
-                      <div key={headerGroup.id} className="flex">
-                        {headerGroup.headers.map((header) => (
-                          <div
-                            key={header.id}
-                            style={{ width: header.getSize() }}
-                            className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                          >
-                            {header.column.columnDef.header}
-                            {header.column.getCanSort() && (
-                              <FaSort
-                                onClick={header.column.getToggleSortingHandler()}
-                              />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                    {topicsTable.getRowModel().rows.map((row) => (
-                      <div key={row.id} className="flex">
+              <table
+                style={{ width: topicsTable.getCenterTotalSize() }}
+                className="table-fixed min-w-full text-black border border-gray-600"
+              >
+                <thead className="bg-[#2b193d] text-white">
+                  {topicsTable.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          style={{ width: header.getSize() }}
+                          className="font-bold text-left border border-gray-600 p-2"
+                        >
+                          {header.column.columnDef.header}
+                          {header.column.getCanSort() && (
+                            <FaSort
+                              onClick={header.column.getToggleSortingHandler()}
+                              className="inline ml-1 cursor-pointer"
+                            />
+                          )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+
+                <tbody>
+                  {topicsTable.getRowModel().rows.length > 0 ? (
+                    topicsTable.getRowModel().rows.map((row) => (
+                      <tr key={row.id}>
                         {row.getVisibleCells().map((cell) => (
-                          <div
+                          <td
                             key={cell.id}
                             style={{ width: cell.column.getSize() }}
                             className="text-left border border-gray-600 p-2"
@@ -443,35 +464,45 @@ const ReviewerCourses = () => {
                               cell.column.columnDef.cell,
                               cell.getContext()
                             )}
-                          </div>
+                          </td>
                         ))}
-                      </div>
-                    ))}
-                    <p>
-                      Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
-                      {topicsTable.getPageCount()}
-                    </p>
-                    <button
-                      className="border border-gray-600 text-15"
-                      onClick={topicsTable.getState().pagination.previousPage}
-                    >
-                      {"<"}
-                    </button>
-                    <button
-                      className="border border-gray-600 text-15"
-                      onClick={topicsTable.getState().pagination.nextPage}
-                    >
-                      {">"}
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex">
-                    <div className="flex-1 text-left p-2">
-                      Topics have not been uploaded yet
-                    </div>
-                  </div>
-                )}
-              </div>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={topicsTable.getAllColumns().length}
+                        className="text-left border border-gray-600 p-2"
+                      >
+                        Topics have not been uploaded yet
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              {topicsTable.getRowModel().rows.length > 0 && (
+                <div className="mt-2">
+                  <p>
+                    Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
+                    {topicsTable.getPageCount()}
+                  </p>
+                  <button
+                    className="border border-gray-600 text-sm p-1 mr-2"
+                    onClick={() => topicsTable.previousPage()}
+                    disabled={!topicsTable.getCanPreviousPage()}
+                  >
+                    {"<"}
+                  </button>
+                  <button
+                    className="border border-gray-600 text-sm p-1"
+                    onClick={() => topicsTable.nextPage()}
+                    disabled={!topicsTable.getCanNextPage()}
+                  >
+                    {">"}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </main>

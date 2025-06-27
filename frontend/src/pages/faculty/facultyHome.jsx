@@ -23,11 +23,14 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get(
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((response) => {
         setFaculty(response.data);
       })
@@ -36,11 +39,16 @@ const HomePage = () => {
       });
 
     axios
-      .get(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/waiting-courses/${localStorage.getItem("FID")}`,{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get(
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/waiting-courses/${localStorage.getItem(
+          "FID"
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((response) => {
         console.log(response.data);
         setWaitingCourses(response.data);
@@ -54,7 +62,7 @@ const HomePage = () => {
     {
       header: "Course Name",
       accessorKey: "Course_name",
-      cell: (props) => (<p>{props.getValue()}</p>)
+      cell: (props) => <p>{props.getValue()}</p>,
     },
     {
       header: "Course Description",
@@ -102,78 +110,91 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="mt-10 bg-white p-8 rounded-lg shadow-md max-w-3xl">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
-              <Link to="/faculty/newcourse">
-                <div className="flex items-center">
-                  <GrAdd className="mr-2" />
-                  Add New Course
-                </div>
-              </Link>
-            </button>
+          <div className="mt-10 bg-white p-8 rounded-lg shadow-md max-w-3xl overflow-auto">
+            <Link to="/faculty/newcourse">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4 flex items-center">
+                <GrAdd className="mr-2" />
+                Add New Course
+              </button>
+            </Link>
+
             <h2>Courses Waiting For Approval</h2>
-            <div style={{ width: waitingTable.getCenterTotalSize()}} className="text-black">
-              {waitingTable.getRowModel().rows.length > 0 ? (
-                <>
-                  {waitingTable.getHeaderGroups().map((headerGroup) => (
-                    <div key={headerGroup.id} className="flex">
-                      {headerGroup.headers.map((header) => (
-                        <div
-                          key={header.id}
-                          style={{ width: header.getSize() }}
-                          className="w-4xl font-bold text-left text-white bg-[#2b193d] border border-gray-600 p-2"
-                        >
-                          {header.column.columnDef.header}
-                          {header.column.getCanSort() && (
-                            <FaSort
-                              onClick={header.column.getToggleSortingHandler()}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                  {waitingTable.getRowModel().rows.map((row) => (
-                    <div key={row.id} className="flex">
+
+            <table className="table-fixed min-w-full text-left border border-gray-600">
+              <thead className="bg-[#2b193d] text-white">
+                {waitingTable.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        style={{ width: header.getSize() }}
+                        className="font-bold border border-gray-600 p-2"
+                      >
+                        {header.column.columnDef.header}
+                        {header.column.getCanSort() && (
+                          <FaSort
+                            onClick={header.column.getToggleSortingHandler()}
+                            className="inline ml-1 cursor-pointer"
+                          />
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {waitingTable.getRowModel().rows.length > 0 ? (
+                  waitingTable.getRowModel().rows.map((row) => (
+                    <tr key={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <div
+                        <td
                           key={cell.id}
                           style={{ width: cell.column.getSize() }}
-                          className="text-left border border-gray-600 p-2"
+                          className="border border-gray-600 p-2 text-black"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
                           )}
-                        </div>
+                        </td>
                       ))}
-                    </div>
-                  ))}
-                  <p>
-                    Page {waitingTable.getState().pagination.pageIndex + 1} of{" "}
-                    {waitingTable.getPageCount()}
-                  </p>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={waitingTable.getState().pagination.previousPage}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-15"
-                    onClick={waitingTable.getState().pagination.nextPage}
-                  >
-                    {">"}
-                  </button>
-                </>
-              ) : (
-                <div className="flex">
-                  <div className="flex-1 text-left border border-gray-600 p-2">
-                    No courses waiting for approval
-                  </div>
-                </div>
-              )}
-            </div>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={waitingTable.getAllColumns().length}
+                      className="p-2 text-left"
+                    >
+                      You have no courses pending approval.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {waitingTable.getRowModel().rows.length > 0 && (
+              <div className="mt-2 text-black">
+                <p>
+                  Page {waitingTable.getState().pagination.pageIndex + 1} of{" "}
+                  {waitingTable.getPageCount()}
+                </p>
+                <button
+                  className="border border-gray-600 text-sm p-1 mr-2"
+                  onClick={() => waitingTable.previousPage()}
+                  disabled={!waitingTable.getCanPreviousPage()}
+                >
+                  {"<"}
+                </button>
+                <button
+                  className="border border-gray-600 text-sm p-1"
+                  onClick={() => waitingTable.nextPage()}
+                  disabled={!waitingTable.getCanNextPage()}
+                >
+                  {">"}
+                </button>
+              </div>
+            )}
           </div>
         </main>
       </div>
