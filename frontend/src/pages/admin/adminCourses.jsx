@@ -480,7 +480,7 @@ const AdminCourses = () => {
                     Available Reviewers
                   </h2>
 
-                  <div className="overflow-auto rounded-lg shadow-md">
+                  <div className="overflow-auto">
                     <table
                       style={{ width: reviewersTable.getCenterTotalSize() }}
                       className="min-w-full table-fixed border border-gray-600"
