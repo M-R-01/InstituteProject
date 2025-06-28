@@ -90,7 +90,11 @@ const HomePage = () => {
           sidebarToggle ? "ml-0" : "md:ml-60"
         }`}
       >
-        <Nav PageName={"Home"} />
+        <Nav
+          PageName={"Home"}
+          sidebarToggle={sidebarToggle}
+          setSidebarToggle={setSidebarToggle}
+        />
 
         <main className="p-10 pt-24 bg-gray-200 min-h-screen">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl">

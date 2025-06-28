@@ -212,7 +212,11 @@ const ReviewerCourses = () => {
           sidebarToggle ? "ml-0" : "md:ml-60"
         }`}
       >
-        <Nav PageName={"Assigned Courses"} />
+        <Nav
+          PageName={"Home"}
+          sidebarToggle={sidebarToggle}
+          setSidebarToggle={setSidebarToggle}
+        />
 
         <main className="p-10 pt-24 bg-gray-200 min-h-screen">
           <div className="mt-5 bg-white p-8 rounded-lg shadow-md w-full overflow-auto">

@@ -39,6 +39,7 @@ router.get("/course/:CID", verifyToken, (req, res) => {
       c.CID,
       c.Course_name,
       c.Course_description,
+      c.status,
       f.Faculty_Name,
       rf.Faculty_Name AS Reviewer,
       COALESCE(fc.file_count, 0) AS File_Count
@@ -65,6 +66,25 @@ router.get("/course/:CID", verifyToken, (req, res) => {
     (err, result) => {
       if (err) throw err;
       res.json(result[0]);
+    },
+  );
+});
+
+router.post("/complete-course/:CID", verifyToken, (req, res) => {
+  const { CID } = req.params;
+  const { status } = req.body.status;
+
+  db.query(
+    `UPDATE
+      Courses
+    SET
+      status = 'Completed'
+    WHERE
+      CID = ?`,
+    [CID],
+    (err, result) => {
+      if (err) throw err;
+      res.json({ message: "Course completed successfully!" });
     },
   );
 });
@@ -125,7 +145,7 @@ router.post("/new-topic/:CID", verifyToken, (req, res) => {
   );
 });
 
-router.get("/get-topics/:courseId", (req, res) => {
+router.get("/get-topics/:courseId", verifyToken, (req, res) => {
   const { courseId } = req.params;
 
   // Validate inputs
@@ -155,13 +175,15 @@ router.get("/get-feedback/:File_Id", verifyToken, (req, res) => {
   const { File_Id } = req.params;
   db.query(
     `SELECT
+    quality,
+    rating,
     feedback FROM Feedback WHERE File_id = ?`,
     [File_Id],
     (err, result) => {
       if (err) throw err;
       res.json(result[0]);
-    }
-  )
-})
+    },
+  );
+});
 
 export default router;

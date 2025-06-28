@@ -36,7 +36,9 @@ router.post("/approve-waiting-courses", (req, res) => {
 
   // Validate inputs
   if (!courseName || !courseDescription || !status) {
-    return res.status(400).json({ error: "Course name, description, and status required" });
+    return res
+      .status(400)
+      .json({ error: "Course name, description, and status required" });
   }
 
   db.query(
@@ -45,7 +47,9 @@ router.post("/approve-waiting-courses", (req, res) => {
     (err, result) => {
       if (err) throw err;
       if (result.length === 0) {
-        return res.status(400).json({ error: "Course not found in waiting list" });
+        return res
+          .status(400)
+          .json({ error: "Course not found in waiting list" });
       } else {
         if (status === "approved") {
           const facultyId = result[0].FID;
@@ -59,7 +63,9 @@ router.post("/approve-waiting-courses", (req, res) => {
                 [courseName],
                 (err, result) => {
                   if (err) throw err;
-                  res.json({ message: "Course approved and removed from waiting list" });
+                  res.json({
+                    message: "Course approved and removed from waiting list",
+                  });
                 },
               );
             },
@@ -70,7 +76,9 @@ router.post("/approve-waiting-courses", (req, res) => {
             [courseName],
             (err, result) => {
               if (err) throw err;
-              res.json({ message: "Course rejected and removed from waiting list" });
+              res.json({
+                message: "Course rejected and removed from waiting list",
+              });
             },
           );
         }
@@ -87,21 +95,25 @@ router.post("/assign-reviewers", (req, res) => {
     return res.status(400).json({ error: "Course ID, reviewer required" });
   }
 
-  db.query("SELECT CID FROM Courses WHERE CID =?", [courseId], (err, result) => {
-    if (err) throw err;
-    if (result.length === 0) {
-      return res.status(400).json({ error: "Course not found" });
-    } else {
-      db.query(
-        "INSERT INTO Course_Reviewer (CID,FID) VALUES(?,?)",
-        [courseId, reviewer],
-        (err, result) => {
-          if (err) throw err;
-          res.json({ message: "Reviewer assigned successfully!" });
-        },
-      );
-    }
-  });
+  db.query(
+    "SELECT CID FROM Courses WHERE CID =?",
+    [courseId],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(400).json({ error: "Course not found" });
+      } else {
+        db.query(
+          "INSERT INTO Course_Reviewer (CID,FID,status) VALUES(?,?,?)",
+          [courseId, reviewer, "pending"],
+          (err, result) => {
+            if (err) throw err;
+            res.json({ message: "Reviewer assigned successfully!" });
+          },
+        );
+      }
+    },
+  );
 });
 
 router.get("/faculty", (req, res) => {
@@ -215,11 +227,13 @@ router.get("/available-reviewers", (req, res) => {
       f.Faculty_Qualification,
       f.Faculty_department,
       f.Faculty_Institution,
-      COUNT(r.CID) AS Number_of_Courses_Reviewing
+      COUNT(c.CID) AS Number_of_Courses_Reviewing
     FROM 
       Faculty f
     LEFT JOIN 
       Course_Reviewer r ON f.FID = r.FID
+    LEFT JOIN
+      Courses c ON r.CID = c.CID AND c.status = 'Active'
     GROUP BY 
       f.FID, f.Faculty_Name, f.Faculty_Qualification, f.Faculty_department, f.Faculty_Institution
     HAVING 
@@ -263,7 +277,9 @@ router.post("/send-reminder", (req, res) => {
 
   // Validate inputs
   if (!courseName || !fileName || !reviewerEmail) {
-    return res.status(400).json({ error: "Course name, file name, and reviewer email required" });
+    return res
+      .status(400)
+      .json({ error: "Course name, file name, and reviewer email required" });
   }
 
   db.query(
@@ -288,7 +304,7 @@ router.post("/send-reminder", (req, res) => {
       res.json({ message: "Reminder sent successfully!" });
     },
   );
-})
+});
 
 router.post("/send-all-reminders", (req, res) => {
   const feedbacks = req.body.feedbacks;
@@ -300,6 +316,6 @@ router.post("/send-all-reminders", (req, res) => {
     const { courseName, fileName, reviewerEmail } = feedback;
     // Here you would implement the logic to send the reminder email for each feedback
   });
-})
+});
 
 export default router;

@@ -38,11 +38,87 @@ router.get("/courses-to-review", verifyToken, (req, res) => {
     );
 });
 
+router.get("/review-requests", verifyToken, (req, res) => {
+    const FID = req.user.FID;
+    db.query(
+        `SELECT
+            c.CID,
+            c.Course_name,
+            c.Course_description,
+            f.Faculty_Name,
+            f.Faculty_Institution
+        FROM
+            Course_Reviewer cr
+        JOIN
+            Courses c ON cr.CID = c.CID
+        JOIN
+            Faculty f ON c.FID = f.FID
+        WHERE
+            cr.FID = ? AND cr.status = 'pending';`,
+        [FID],
+        (err, results) => {
+            if (err) {
+                console.log(err);
+                return res
+                    .status(500)
+                    .json({ error: "Failed to retrieve review requests" });
+            }
+            res.json(results);
+        },
+    );
+});
+
+router.post("/accept-review-request/:CID", verifyToken, (req, res) => {
+    const { CID } = req.params;
+    const FID = req.user.FID;
+    const {status} = req.body;
+
+    if (status === "accepted") {
+        db.query(
+            `UPDATE
+                Course_Reviewer
+            SET
+                status = 'accepted'
+            WHERE
+                CID = ? AND FID = ?`,
+            [CID, FID],
+            (err, results) => {
+                if (err) {
+                    console.log(err);
+                    return res
+                        .status(500)
+                        .json({ error: "Failed to accept review request" });
+                }
+                res.json({ message: "Review request accepted" });
+            },
+        );
+    } else if (status === "declined") {
+        db.query(
+            `DELETE FROM
+                Course_Reviewer
+            WHERE
+                CID = ? AND FID = ?`, 
+        [CID, FID],
+        (err, results) => {
+            if (err) {
+                console.log(err);
+                return res
+                    .status(500)
+                    .json({ error: "Failed to reject review request" });
+            }
+            res.json({ message: "Review request rejected" });
+        })
+    } else {
+        return res.status(400).json({ error: "Invalid status" });
+    }
+});
+
 router.get("/pending-feedbacks/:FID", verifyToken, (req, res) => {
     console.log("Request received for pending feedbacks");
     const FID = req.user.FID;
     db.query(
         `SELECT 
+        fi.File_id,
         c.Course_Name, 
         fi.File_name, 
         fi.File_link
@@ -73,7 +149,7 @@ router.get("/pending-feedbacks/:FID", verifyToken, (req, res) => {
 
 router.get("/topics-to-review/:CID", verifyToken, (req, res) => {
     const { CID } = req.params;
-    
+
     db.query(
         `SELECT
             f.File_id,
@@ -108,14 +184,14 @@ router.get("/topics-to-review/:CID", verifyToken, (req, res) => {
 
 router.post("/submit-feedback/:File_id", verifyToken, (req, res) => {
     const { File_id } = req.params;
-    const { CID, feedback } = req.body;
+    const { CID, feedback, quality, rating } = req.body;
     const FID = req.user.FID;
 
     db.query(
         `INSERT INTO 
-            Feedback (File_id, FID, CID, feedback) 
+            Feedback (File_id, FID, CID, feedback, quality, rating) 
         VALUES (?, ?, ?, ?)`,
-        [File_id, FID, CID, feedback],
+        [File_id, FID, CID, feedback, quality, rating],
         (err, results) => {
             if (err) {
                 return res
@@ -129,23 +205,26 @@ router.post("/submit-feedback/:File_id", verifyToken, (req, res) => {
 
 router.put("/edit-feedback/:File_id", verifyToken, (req, res) => {
     const { File_id } = req.params;
-    const { CID, feedback } = req.body;
+    const { CID, feedback, quality, rating } = req.body;
     const FID = req.user.FID;
 
     db.query(
         `UPDATE
             Feedback
         SET
-            feedback = ?
+            feedback = ?,quality = ?, rating = ? 
         WHERE
-            File_id = ? AND FID = ? AND CID = ?`,[feedback, File_id, FID, CID], (err, results) => {
-                if (err) {
-                    return res
-                        .status(500)
-                        .json({ error: "Failed to update feedback" });
-                }
-                res.json({ message: "Feedback updated successfully" });
-            })
-})
+            File_id = ? AND FID = ? AND CID = ?`,
+        [feedback, quality, rating, File_id, FID, CID],
+        (err, results) => {
+            if (err) {
+                return res
+                    .status(500)
+                    .json({ error: "Failed to update feedback" });
+            }
+            res.json({ message: "Feedback updated successfully" });
+        },
+    );
+});
 
 export default router;
