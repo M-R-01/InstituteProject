@@ -1,15 +1,40 @@
 import React from "react";
 import { useState } from "react";
-import Logo1 from '../assets/courselaptopimage.png'
-import Logo2 from '../assets/courseimagemobile.png'
+import Logo1 from "../../assets/courselaptopimage.png";
+import Logo2 from "../../assets/courseimagemobile.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { showFacultyToast } from "../../components/faculty/FacultyToast";
 
 function NewCoursePage() {
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(courseName, courseDescription);
+    axios
+      .post(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/submit-for-approval",
+        {
+          courseName: courseName,
+          courseDescription: courseDescription,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        showFacultyToast("Course submitted successfully!", "success");
+        navigate("/faculty/home");
+      })
+      .catch((error) => {
+        console.error("There was an error submitting the course!", error);
+        showFacultyToast("Failed to submit course. Please try again.", "error");
+      });
   };
 
   const handleCourseName = (e) => {
@@ -28,8 +53,16 @@ function NewCoursePage() {
             Choose your
           </div>
           <div className="sm:h-[25rem] h-[5.5rem] w-full sm:w-[14rem]">
-            <img src={Logo2} alt="Mobile View" className="block md:hidden h-[5.5rem] w-full px-[2.5rem]" />
-            <img src={Logo1} alt="Laptop View" className="hidden md:block h-[25rem] w-[14rem]" />
+            <img
+              src={Logo2}
+              alt="Mobile View"
+              className="block md:hidden h-[5.5rem] w-full px-[2.5rem]"
+            />
+            <img
+              src={Logo1}
+              alt="Laptop View"
+              className="hidden md:block h-[25rem] w-[14rem]"
+            />
           </div>
         </div>
         {/* Right Side */}
