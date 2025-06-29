@@ -14,6 +14,7 @@ import {
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
+import { showFacultyToast } from "../../components/faculty/FacultyToast";
 
 const FacultyCourses = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -65,7 +66,11 @@ const FacultyCourses = () => {
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/get-topics/${CID}`
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/get-topics/${CID}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       )
       .then((response) => {
         setTopics(response.data);
@@ -96,9 +101,11 @@ const FacultyCourses = () => {
             course.CID === CID ? { ...course, status: "Completed" } : course
           )
         );
+        showFacultyToast("Course completed successfully", "success");
       })
       .catch((error) => {
         console.error("Error completing course:", error);
+        showFacultyToast("Failed to complete course. Try again", "error");
       });
   }
 

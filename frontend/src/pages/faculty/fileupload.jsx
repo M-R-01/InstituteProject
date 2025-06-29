@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../../components/faculty/sidebar1";
 import axios from "axios";
+import { showFacultyToast } from "../../components/faculty/FacultyToast";
 
 const VideoUploadPage = () => {
   const [fileName, setFileName] = useState("");
@@ -28,11 +29,12 @@ const VideoUploadPage = () => {
       })
       .then((response) => {
         console.log("File uploaded successfully:", response.data);
+        showFacultyToast("File uploaded successfully", "success");
         navigate("/faculty/courses");
       })
       .catch((error) => {
         console.error("Error uploading file:", error);
-        alert("Failed to upload file. Please try again.");
+        showFacultyToast("Error uploading file", "error");
       });
   };
 

@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { showFacultyToast } from "../components/faculty/FacultyToast";
 
 const ViewFile = () => {
   const { fileId } = useParams();
@@ -91,12 +92,11 @@ const ViewFile = () => {
         )
         .then((response) => {
           console.log(response.data);
-          alert("Feedback updated successfully");
-          setFeedback("");
+          showFacultyToast("Feedback updated successfully", "success");
         })
         .catch((error) => {
           console.error("Error updating feedback:", error);
-          alert("Failed to update feedback");
+          showFacultyToast("Failed to update feedback", "error");
         });
     } else {
       axios
@@ -116,19 +116,18 @@ const ViewFile = () => {
         )
         .then((response) => {
           console.log(response.data);
-          alert("Feedback submitted successfully");
-          setFeedback("");
+          showFacultyToast("Feedback submitted successfully", "success");
         })
         .catch((error) => {
           console.error("Error submitting feedback:", error);
-          alert("Failed to submit feedback");
+          showFacultyToast("Failed to submit feedback", "error");
         });
     }
   };
 
   return (
     <div className="flex h-screen">
-      <div className="w-3/5 bg-gray-300 p-1 gap-2 flex flex-col">
+      <div className="w-3/5 bg-blue-500 p-1 gap-2 flex flex-col">
         <div className="p-1 bg-white rounded shadow-md h-full">
           {linkType === "youtube" ? (
             <div className="w-full h-2/3 flex flex-col aspect-video">
@@ -163,7 +162,7 @@ const ViewFile = () => {
           </div>
         </div>
       </div>
-      <div className="w-2/5 bg-gray-300 pt-1 pb-1 pr-1">
+      <div className="w-2/5 bg-blue-500 pt-1 pb-1 pr-1">
         <form
           className="w-full bg-white p-1 rounded shadow-md flex flex-col gap-4 h-full"
           onSubmit={handleSubmit}

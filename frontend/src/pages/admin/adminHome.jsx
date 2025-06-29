@@ -5,10 +5,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar2";
 import { FaBars, FaSort } from "react-icons/fa";
 import axios from "axios";
-import {
-  showAdminToast,
-  AdminToastContainer,
-} from "../../components/admin/AdminToast";
+import { showFacultyToast } from "../../components/faculty/FacultyToast";
 
 import {
   getCoreRowModel,
@@ -82,7 +79,16 @@ const AdminHome = () => {
       )
       .then((response) => {
         console.log("Course approved:", response.data);
-        showAdminToast("Course approved successfully", "success");
+        showFacultyToast("Course approved successfully", "success");
+        setWaitingCourses((prevCourses) =>
+          prevCourses.filter(
+            (course) => course.Course_name !== row.Course_name
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("Error approving course:", error);
+        showFacultyToast("Error approving course", "error");
       });
   };
 
@@ -98,6 +104,15 @@ const AdminHome = () => {
       )
       .then((response) => {
         console.log("Course rejected:", response.data);
+        showFacultyToast("Course rejected successfully", "success");
+        setWaitingCourses((prevCourses) =>
+          prevCourses.filter(
+            (course) => course.Course_name !== row.Course_name
+          )
+        );
+      })
+      .catch((error) => {
+        showFacultyToast("Error rejecting course", "error");
       });
   };
 
@@ -116,7 +131,7 @@ const AdminHome = () => {
       )
       .then((response) => {
         console.log("Reminder sent:", response.data);
-        showAdminToast("Reminder sent successfully", "success");
+        showFacultyToast("Reminder sent successfully", "success");
       });
   };
 
