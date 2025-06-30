@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import LoginInPage from "./pages/LoginInPage.jsx";
+import ForgotPassword from "./pages/forgotpassword.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import RoleSelectionPage from "./pages/RoleSelectionPage.jsx";
 
@@ -27,6 +28,7 @@ function App() {
       <Routes>
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/" element={<LoginInPage />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/roleselection" element={<RoleSelectionPage />} />
 
         <Route path="/admin" element={<AdminLogin />} />
