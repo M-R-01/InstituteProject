@@ -2,6 +2,7 @@
 
 import db from "../index.js";
 import express from "express";
+import mailHelper from "../helper.js";
 
 const router = express.Router();
 
@@ -51,64 +52,55 @@ router.post("/approve-waiting-courses", (req, res) => {
           .status(400)
           .json({ error: "Course not found in waiting list" });
       } else {
-        if (status === "approved") {
-          const facultyId = result[0].FID;
-          db.query(
-            "INSERT INTO Courses (Course_name, Course_description, FID, created_at) VALUES (?,?,?,CURDATE())",
-            [courseName, courseDescription, facultyId],
-            (err, result) => {
-              if (err) throw err;
+        db.query(
+          "SELECT Faculty_Email FROM Faculty WHERE FID = ?",
+          [result[0].FID],
+          (err, result) => {
+            if (err) throw err;
+            const facultyEmail = result[0].Faculty_Email;
+
+            if (status === "approved") {
+              const facultyId = result[0].FID;
+              db.query(
+                "INSERT INTO Courses (Course_name, Course_description, FID, created_at) VALUES (?,?,?,CURDATE())",
+                [courseName, courseDescription, facultyId],
+                (err, result) => {
+                  if (err) throw err;
+                  db.query(
+                    "DELETE FROM Waiting_for_approval WHERE Course_name =?",
+                    [courseName],
+                    (err, result) => {
+                      if (err) throw err;
+                      res.json({
+                        message:
+                          "Course approved and removed from waiting list",
+                      });
+                      mailHelper(
+                        facultyEmail,
+                        "Course Approval",
+                        `<p>Your course ${courseName} has been approved.</p> <p>Please login to your account to add topics to your course.</p>`,
+                      );
+                    },
+                  );
+                },
+              );
+            } else if (status === "rejected") {
               db.query(
                 "DELETE FROM Waiting_for_approval WHERE Course_name =?",
                 [courseName],
                 (err, result) => {
                   if (err) throw err;
+                  mailHelper(
+                    facultyEmail,
+                    "Course Rejection",
+                    `<p>Your course ${courseName} has been rejected.</p>`,
+                  );
                   res.json({
-                    message: "Course approved and removed from waiting list",
+                    message: "Course rejected and removed from waiting list",
                   });
                 },
               );
-            },
-          );
-        } else if (status === "rejected") {
-          db.query(
-            "DELETE FROM Waiting_for_approval WHERE Course_name =?",
-            [courseName],
-            (err, result) => {
-              if (err) throw err;
-              res.json({
-                message: "Course rejected and removed from waiting list",
-              });
-            },
-          );
-        }
-      }
-    },
-  );
-});
-
-router.post("/assign-reviewers", (req, res) => {
-  const { courseId, reviewer } = req.body;
-
-  // Validate inputs
-  if (!courseId || !reviewer) {
-    return res.status(400).json({ error: "Course ID, reviewer required" });
-  }
-
-  db.query(
-    "SELECT CID FROM Courses WHERE CID =?",
-    [courseId],
-    (err, result) => {
-      if (err) throw err;
-      if (result.length === 0) {
-        return res.status(400).json({ error: "Course not found" });
-      } else {
-        db.query(
-          "INSERT INTO Course_Reviewer (CID,FID,status) VALUES(?,?,?)",
-          [courseId, reviewer, "pending"],
-          (err, result) => {
-            if (err) throw err;
-            res.json({ message: "Reviewer assigned successfully!" });
+            }
           },
         );
       }
@@ -152,7 +144,8 @@ router.get("/courses", (req, res) => {
       f.Faculty_Qualification, 
       f.Faculty_department, 
       f.Faculty_Institution, 
-      rf.Faculty_Name as Reviewer  
+      rf.Faculty_Name as Reviewer,
+      r.status as Reviewer_Status
     FROM 
       Courses c 
     JOIN 
@@ -176,7 +169,9 @@ router.get("/course/:CID", (req, res) => {
       c.Course_name,
       c.Course_description,
       f.Faculty_Name,
+      rf.FID AS Reviewer_Id,
       rf.Faculty_Name AS Reviewer,
+      r.status as Reviewer_Status,
       COALESCE(fc.file_count, 0) AS File_Count
     FROM 
       Courses c
@@ -245,6 +240,67 @@ router.get("/available-reviewers", (req, res) => {
   );
 });
 
+router.post("/assign-reviewers", (req, res) => {
+  const { courseId, reviewer } = req.body;
+
+  // Validate inputs
+  if (!courseId || !reviewer) {
+    return res.status(400).json({ error: "Course ID, reviewer required" });
+  }
+
+  db.query(
+    "SELECT CID, FID FROM Courses WHERE CID =?",
+    [courseId],
+    (err, result) => {
+      if (err) throw err;
+      if (result.length === 0) {
+        return res.status(400).json({ error: "Course not found" });
+      } else {
+        db.query(
+          "INSERT INTO Course_Reviewer (CID,FID,status) VALUES(?,?,?)",
+          [courseId, reviewer, "pending"],
+          (err, result) => {
+            if (err) throw err;
+            db.query(
+              `SELECT Faculty_Email FROM Faculty WHERE FID = ?`,
+              [reviewer],
+              (err, result) => {
+                if (err) throw err;
+                const reviewerEmail = result[0].Faculty_Email;
+                mailHelper(
+                  reviewerEmail,
+                  "Review Request",
+                  `<p>You have been assigned to review a new courses.</p> 
+                <p>Please login to your account to accept or decline the request as soon as possible.</p>`,
+                );
+              },
+            );
+            res.json({ message: "Reviewer assigned successfully!" });
+          },
+        );
+      }
+    },
+  );
+});
+
+router.delete("/delete-review-request", (req, res) => {
+  const { courseId, reviewer } = req.body;
+
+  // Validate inputs
+  if (!courseId || !reviewer) {
+    return res.status(400).json({ error: "Course ID, reviewer required" });
+  }
+
+  db.query(
+    "DELETE FROM Course_Reviewer WHERE CID = ? AND FID = ?",
+    [courseId, reviewer],
+    (err, result) => {
+      if (err) throw err;
+      res.json({ message: "Review request deleted successfully!" });
+    },
+  );
+});
+
 router.get("/check-feedbacks", (req, res) => {
   db.query(
     `SELECT
@@ -300,7 +356,11 @@ router.post("/send-reminder", (req, res) => {
       if (result.length === 0) {
         return res.status(404).json({ error: "Course or reviewer not found" });
       }
-      // Here you would implement the logic to send the reminder email.
+      mailHelper(
+        reviewerEmail,
+        "Reminder to submit feedback",
+        `<p>This is a reminder to submit feedback for the topic ${fileName} under course ${courseName}.</p>`,
+      );
       res.json({ message: "Reminder sent successfully!" });
     },
   );
@@ -314,7 +374,11 @@ router.post("/send-all-reminders", (req, res) => {
   console.log("Sending reminders for feedbacks:", feedbacks);
   feedbacks.forEach((feedback) => {
     const { courseName, fileName, reviewerEmail } = feedback;
-    // Here you would implement the logic to send the reminder email for each feedback
+    mailHelper(
+      reviewerEmail,
+      "Reminder to submit feedback",
+      `<p>This is a reminder to submit feedback for the topic ${fileName} under course ${courseName}.</p>`,
+    );
   });
 });
 

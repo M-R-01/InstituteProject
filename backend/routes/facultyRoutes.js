@@ -1,6 +1,7 @@
 import express from "express";
 import db from "../index.js";
 import verifyToken from "../middleware/auth.js";
+import mailHelper from "../helper.js"
 
 const router = express.Router();
 
@@ -80,10 +81,25 @@ router.post("/complete-course/:CID", verifyToken, (req, res) => {
     SET
       status = 'Completed'
     WHERE
-      CID = ?`,
-    [CID],
+      CID`,
+    [CID, ],
     (err, result) => {
       if (err) throw err;
+      db.query(
+        `SELECT
+          f.Faculty_Email,
+          c.Course_name
+          FROM
+          Faculty f
+          JOIN
+          Courses c ON f.FID = c.FID
+          WHERE
+          c.CID = ?`, [CID], (err, result) => {
+            if (err) throw err;
+            const facultyEmail = result[0].Faculty_Email;
+            mailHelper(facultyEmail, "Course Completed", `<p>You have just completed your course ${result[0].Course_Name}.</p>
+            <p>Congratulations</p>`)
+          })
       res.json({ message: "Course completed successfully!" });
     },
   );
@@ -100,11 +116,20 @@ router.post("/submit-for-approval", verifyToken, (req, res) => {
       .json({ error: "Course name, description, and faculty ID required" });
   }
 
-  const sql =
-    "INSERT INTO Waiting_for_approval (Course_name, Course_description, FID) VALUES (?,?,?)";
-
-  db.query(sql, [courseName, courseDescription, FID], (err, result) => {
+  db.query("INSERT INTO Waiting_for_approval (Course_name, Course_description, FID) VALUES (?,?,?)", [courseName, courseDescription, FID], (err, result) => {
     if (err) throw err;
+    db.query(
+      `SELECT
+        Faculty_Email
+        FROM
+        Faculty
+        WHERE
+        FID = ?`, [FID], (err, result) => {
+          if (err) throw err;
+          const facultyEmail = result[0].Faculty_Email;
+          mailHelper(facultyEmail, "Course Submitted for Approval", `<p>You have just submitted your course ${courseName} for approval.</p>
+          <p>You will be notified once it is approved.</p>`)
+        })
     res.json({ message: "Course submitted for approval successfully!" });
   });
 });
@@ -124,7 +149,7 @@ router.get("/waiting-courses/:FID", verifyToken, (req, res) => {
 router.post("/new-topic/:CID", verifyToken, (req, res) => {
   const { fileName, fileType, fileLink } = req.body;
   const { CID } = req.params;
-  console.log("Course ID:", CID);
+  
   // Validate inputs
   if (!CID || !fileName || !fileType || !fileLink) {
     return res
@@ -140,6 +165,21 @@ router.post("/new-topic/:CID", verifyToken, (req, res) => {
     [CID, fileName, fileType, fileLink],
     (err, result) => {
       if (err) throw err;
+      db.query(
+        `SELECT
+          f.Faculty_Email,
+          c.Course_name
+          FROM
+          Faculty f
+          JOIN
+          Courses c ON f.FID = c.FID
+          WHERE
+          c.CID = ?`, [CID], (err, result) => {
+            if (err) throw err;
+            const facultyEmail = result[0].Faculty_Email;
+            mailHelper(facultyEmail, "New Topic Added", `<p>You have just added a new topic ${fileName} to your course ${result[0].Course_Name}.</p>
+            <p>Please wait for the reviewers to review it.</p>`)
+          })
       res.json({ message: "New topic added successfully!" });
     },
   );

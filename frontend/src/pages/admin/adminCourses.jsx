@@ -8,10 +8,8 @@ import CheckboxColumnFilter from "../../components/filterbox";
 
 import axios from "axios";
 import { FaBars, FaSort } from "react-icons/fa";
-import {
-  showAdminToast,
-  AdminToastContainer,
-} from "../../components/admin/AdminToast";
+
+import { showFacultyToast } from "../../components/faculty/FacultyToast";
 
 import {
   getCoreRowModel,
@@ -38,6 +36,7 @@ const AdminCourses = () => {
         "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses"
       )
       .then((response) => {
+        console.log(response.data);
         setCourses(response.data);
       })
       .catch((error) => {
@@ -97,14 +96,33 @@ const AdminCourses = () => {
         }
       )
       .then((response) => {
-        showAdminToast("Reviewer assigned successfully", "success");
         setAssignReviewer(false);
-        setSelectedCourse(null);
+        getSelectedCourse(selectedCourse.CID);
+        showFacultyToast("Reviewer assigned successfully", "success");
       })
       .catch((error) => {
         console.error("Error assigning reviewer:", error);
+        showFacultyToast("Error assigning reviewer", "error");
       });
   };
+
+  const deleteReviewRequest = (reviewer, courseId) => {
+    axios.delete("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request",
+        {
+          data: {
+            reviewer: reviewer,
+            courseId: courseId,
+          },
+        })
+        .then((response) => {
+          showFacultyToast("Request Deleted Successfully","success");
+          getSelectedCourse(selectedCourse.CID);
+        })
+        .catch((err) => {
+          console.error("Error deleting request:", err);
+          showFacultyToast("Error deleting request","error")
+        })
+  }
 
   const coursesColumns = [
     {
@@ -174,10 +192,14 @@ const AdminCourses = () => {
       accessorKey: "Reviewer",
       cell: (props) => (
         <>
-          {props.getValue() == null ? (
-            <p className="text-red-600">No Reviewer Assigned</p>
+          {props.row.original.Reviewer_Status == "accepted" ? (
+            <p>{props.getValue()}</p>
           ) : (
-            props.getValue()
+            <p className="text-red-700">
+              {props.getValue() == null
+                ? "No reviewer assigned"
+                : "Pending Reviewer Decision"}
+            </p>
           )}
         </>
       ),
@@ -453,6 +475,8 @@ const AdminCourses = () => {
                     <p className="text-black">
                       {selectedCourse.Reviewer == null
                         ? "No reviewer assigned"
+                        : selectedCourse.Reviewer_Status == "pending"
+                        ? `${selectedCourse.Reviewer} (pending decision)`
                         : selectedCourse.Reviewer}
                     </p>
                   </div>
@@ -467,6 +491,17 @@ const AdminCourses = () => {
                       >
                         {assignReviewer ? "Close" : "Assign Reviewer"}
                       </button>
+                    ) : (
+                      ""
+                    )}
+
+                    {selectedCourse.Reviewer_Status == "pending" ? (
+                      <button
+                        className="bg-red-600 hover:bg-red-700 text-white p-2 w-1/2 rounded-lg"
+                        onClick={() => {
+                          deleteReviewRequest(selectedCourse.Reviewer_Id, selectedCourse.CID);
+                        }}
+                      >Delete Request</button>
                     ) : (
                       ""
                     )}
