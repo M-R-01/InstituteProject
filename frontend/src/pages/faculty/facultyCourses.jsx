@@ -24,6 +24,7 @@ const FacultyCourses = () => {
   const navigate = useNavigate();
 
   const email = localStorage.getItem("email");
+
   useEffect(() => {
     axios
       .get(

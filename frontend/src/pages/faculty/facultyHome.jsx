@@ -20,6 +20,7 @@ const HomePage = () => {
   const [waitingCourses, setWaitingCourses] = useState([]);
 
   const email = localStorage.getItem("email");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
@@ -115,7 +116,7 @@ const HomePage = () => {
           </div>
 
           <div className="mt-10 bg-white p-8 rounded-lg shadow-md max-w-3xl overflow-auto">
-            <Link to="/faculty/newcourse">
+            <Link to={`/faculty/newcourse`}>
               <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4 flex items-center">
                 <GrAdd className="mr-2" />
                 Add New Course

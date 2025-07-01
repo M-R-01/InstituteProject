@@ -5,8 +5,6 @@ import ForgotPassword from "./pages/forgotpassword.jsx";
 import ResetPassword from "./pages/resetPassword.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import RoleSelectionPage from "./pages/RoleSelectionPage.jsx";
-
-
 import ViewFile from "./pages/viewFile.jsx";
 
 import AdminLogin from "./pages/admin/adminLogin.jsx";
@@ -23,33 +21,37 @@ import ReviewerHome from "./pages/reviewer/reviewerHome.jsx";
 import ReviewerCourses from "./pages/reviewer/reviewerCourses.jsx";
 
 import { FacultyToastContainer } from "./components/faculty/FacultyToast.jsx";
+import SessionManager from "./components/sessionManager.jsx";
+import PrivateRoute from "./components/privateRoute.jsx";
 
 function App() {
   return (
     <>
+      <SessionManager>
       <Routes>
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/" element={<LoginInPage />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
-        <Route path="/roleselection" element={<RoleSelectionPage />} />
+        <Route path="/roleselection" element={<PrivateRoute><RoleSelectionPage /></PrivateRoute>} />
 
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/home" element={<AdminHome />} />
         <Route path="/admin/courses" element={<AdminCourses />} />
         <Route path="/admin/faculty" element={<AdminFaculty />} />
 
-        <Route path="/faculty/home" element={<HomePage />} />
-        <Route path="/faculty/courses" element={<FacultyCourses />} />
-        <Route path="/faculty/newcourse" element={<NewCoursePage />} />
-        <Route path="/faculty/fileupload/:CID" element={<VideoUploadPage />} />
+        <Route path="/faculty/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+        <Route path="/faculty/courses" element={<PrivateRoute><FacultyCourses /></PrivateRoute>} />
+        <Route path="/faculty/newcourse" element={<PrivateRoute><NewCoursePage /></PrivateRoute>} />
+        <Route path="/faculty/fileupload/:CID" element={<PrivateRoute><VideoUploadPage /></PrivateRoute>} />
 
-        <Route path="/reviewer/home" element={<ReviewerHome />} />
-        <Route path="/reviewer/courses" element={<ReviewerCourses />} />
-        <Route path="/viewfile/:fileId" element={<ViewFile />} />
+        <Route path="/reviewer/home" element={<PrivateRoute><ReviewerHome /></PrivateRoute>} />
+        <Route path="/reviewer/courses" element={<PrivateRoute><ReviewerCourses /></PrivateRoute>} />
+        <Route path="/viewfile/:fileId" element={<PrivateRoute><ViewFile /></PrivateRoute>} />
 
       </Routes>
       <FacultyToastContainer />
+      </SessionManager>
     </>
   );
 }

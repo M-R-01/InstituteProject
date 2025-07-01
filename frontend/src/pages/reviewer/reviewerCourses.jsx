@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../../components/faculty/sidebar1";
 import { FaChevronDown, FaBars, FaSort } from "react-icons/fa";
@@ -20,7 +20,6 @@ const ReviewerCourses = () => {
   const [topics, setTopics] = useState([]);
 
   const email = localStorage.getItem("email");
-  const navigate = useNavigate();
 
   useEffect(() => {
     axios

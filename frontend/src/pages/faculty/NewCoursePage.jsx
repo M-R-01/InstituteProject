@@ -29,7 +29,7 @@ function NewCoursePage() {
       .then((response) => {
         console.log(response.data);
         showFacultyToast("Course submitted successfully!", "success");
-        navigate("/faculty/home");
+        navigate(`/faculty/home`);
       })
       .catch((error) => {
         console.error("There was an error submitting the course!", error);

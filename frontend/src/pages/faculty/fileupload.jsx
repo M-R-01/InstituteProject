@@ -30,7 +30,7 @@ const VideoUploadPage = () => {
       .then((response) => {
         console.log("File uploaded successfully:", response.data);
         showFacultyToast("File uploaded successfully", "success");
-        navigate("/faculty/courses");
+        navigate(`/faculty/courses`);
       })
       .catch((error) => {
         console.error("Error uploading file:", error);

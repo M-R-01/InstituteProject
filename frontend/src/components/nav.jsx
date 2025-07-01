@@ -5,16 +5,15 @@ import { useNavigate } from "react-router-dom";
 
 const Nav = ({PageName, sidebarToggle, setSidebarToggle}) => {
     const role = localStorage.getItem("role");
-
     const navigate = useNavigate();
 
     const handleRoleChange = () => {
         if (role === "faculty") {
             localStorage.setItem("role", "reviewer");
-            navigate("/reviewer/home");
+            navigate(`/reviewer/home`);
         } else if (role === "reviewer") {
             localStorage.setItem("role", "faculty");
-            navigate("/faculty/home");
+            navigate(`/faculty/home`);
         }
     }
     
