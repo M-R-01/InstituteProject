@@ -51,33 +51,17 @@ const SignupPage = () => {
     })
   }
 
-  const handleNameChange = (e) => {
-    setname(e.target.value);
-  };
-
-  const handleEmailChange = (e) => {
-    setemail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setpassword(e.target.value);
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    setconfirmPassword(e.target.value);
-  };
-
   return (
-    <main className="min-h-screen w-full bg-white flex items-center justify-center px-4 py-6">
-      <div className="w-full max-w-6xl flex flex-col sm:flex-row items-center justify-center gap-6">
+    <main className="min-h-screen w-full bg-white flex items-center justify-center">
+      <div className="w-full max-w-6xl flex flex-col sm:flex-row items-center justify-center">
         {/* left side */}
-        <div className="w-full sm:w-2/5 flex flex-col items-center justify-center sm:border-[#939393] sm:border-r-2 sm:border-dotted mb-6 sm:mb-0">
+        <div className="w-full sm:w-2/5 flex flex-col items-center justify-center">
           <div className="text-[#2B193D] text-3xl sm:text-5xl font-bold text-center">
             Welcome!!
           </div>
-          <div className="mt-4 w-3/4 max-w-xs">
+          <div className="mt-4 w-3/4 min-w-[400px]">
             <img
-              className="w-full h-auto"
+              className="w-full h-full object-cover"
               src={signupImage}
               alt="signup_page_image"
             />
@@ -85,7 +69,7 @@ const SignupPage = () => {
         </div>
 
         {/* right side */}
-        <div className="w-full sm:w-3/5 space-y-6">
+        <div className="w-full sm:w-1/2 space-y-6 sm:border-[#939393] sm:border-l-2 sm:border-dotted mb-6 sm:mb-0">
           {/* Name */}
           <div className="w-full max-w-md mx-auto">
             <h2 className="text-[#2B193D] text-lg sm:text-xl font-bold">Name-</h2>

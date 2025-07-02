@@ -107,22 +107,25 @@ const AdminCourses = () => {
   };
 
   const deleteReviewRequest = (reviewer, courseId) => {
-    axios.delete("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request",
+    axios
+      .delete(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request",
         {
           data: {
             reviewer: reviewer,
             courseId: courseId,
           },
-        })
-        .then((response) => {
-          showFacultyToast("Request Deleted Successfully","success");
-          getSelectedCourse(selectedCourse.CID);
-        })
-        .catch((err) => {
-          console.error("Error deleting request:", err);
-          showFacultyToast("Error deleting request","error")
-        })
-  }
+        }
+      )
+      .then((response) => {
+        showFacultyToast("Request Deleted Successfully", "success");
+        getSelectedCourse(selectedCourse.CID);
+      })
+      .catch((err) => {
+        console.error("Error deleting request:", err);
+        showFacultyToast("Error deleting request", "error");
+      });
+  };
 
   const coursesColumns = [
     {
@@ -499,9 +502,14 @@ const AdminCourses = () => {
                       <button
                         className="bg-red-600 hover:bg-red-700 text-white p-2 w-1/2 rounded-lg"
                         onClick={() => {
-                          deleteReviewRequest(selectedCourse.Reviewer_Id, selectedCourse.CID);
+                          deleteReviewRequest(
+                            selectedCourse.Reviewer_Id,
+                            selectedCourse.CID
+                          );
                         }}
-                      >Delete Request</button>
+                      >
+                        Delete Request
+                      </button>
                     ) : (
                       ""
                     )}
@@ -683,20 +691,20 @@ const AdminCourses = () => {
                     Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
                     {topicsTable.getPageCount()}
                   </p>
-                  <button
-                    className="border border-gray-600 text-sm p-2 m-1"
-                    onClick={() => topicsTable.previousPage()}
-                    disabled={!topicsTable.getCanPreviousPage()}
-                  >
-                    {"<"}
-                  </button>
-                  <button
-                    className="border border-gray-600 text-sm p-2 m-1"
-                    onClick={() => topicsTable.nextPage()}
-                    disabled={!topicsTable.getCanNextPage()}
-                  >
-                    {">"}
-                  </button>
+                 <button
+                  className="border border-gray-600 text-sm p-2 m-1"
+                  onClick={() => topicsTable.previousPage()}
+                  disabled={!topicsTable.getCanPreviousPage()}
+                >
+                  {"<"}
+                </button>
+                <button
+                  className="border border-gray-600 text-sm p-2 m-1"
+                  onClick={() => topicsTable.nextPage()}
+                  disabled={!topicsTable.getCanNextPage()}
+                >
+                  {">"}
+                </button>
                 </div>
               )}
             </div>

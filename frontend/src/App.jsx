@@ -7,7 +7,6 @@ import SignupPage from "./pages/SignupPage.jsx";
 import RoleSelectionPage from "./pages/RoleSelectionPage.jsx";
 import ViewFile from "./pages/viewFile.jsx";
 
-import AdminLogin from "./pages/admin/adminLogin.jsx";
 import AdminHome from "./pages/admin/adminHome.jsx";
 import AdminCourses from "./pages/admin/adminCourses.jsx";
 import AdminFaculty from "./pages/admin/adminFaculty.jsx";
@@ -35,7 +34,6 @@ function App() {
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
         <Route path="/roleselection" element={<PrivateRoute><RoleSelectionPage /></PrivateRoute>} />
 
-        <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/home" element={<AdminHome />} />
         <Route path="/admin/courses" element={<AdminCourses />} />
         <Route path="/admin/faculty" element={<AdminFaculty />} />
