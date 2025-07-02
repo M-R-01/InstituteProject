@@ -61,7 +61,7 @@ const VideoUploadPage = () => {
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
-            className="w-full border rounded p-2 py-3   bg-[#fffaf0] focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded p-2 py-3   bg-[#fffaf0] text-black focus:outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="Enter video title"
           />
         </div>
@@ -84,7 +84,7 @@ const VideoUploadPage = () => {
             id="options"
             value={fileType}
             onChange={(e) => setFileType(e.target.value)}
-            className="w-full border rounded p-2   bg-[#fffaf0] focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded p-2   bg-[#fffaf0] text-black focus:outline-none focus:ring-2 focus:ring-blue-300"
           >
             <option value="">Select file type</option>
             <option value=".mp4">.mp4</option>
@@ -98,7 +98,7 @@ const VideoUploadPage = () => {
             type="text"
             value={embedLink}
             onChange={(e) => setEmbedLink(e.target.value)}
-            className="w-full border rounded p-2   bg-[#fffaf0] focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border rounded p-2   bg-[#fffaf0] text-black focus:outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="Paste YouTube video link"
           />
         </div>
