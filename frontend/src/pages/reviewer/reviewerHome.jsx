@@ -217,12 +217,9 @@ const ReviewerHome = () => {
       <Sidebar
         sidebarToggle={sidebarToggle}
         setSidebarToggle={setSidebarToggle}
-        username={email || "username"}
       />
       <div
-        className={`flex-1 min-h-screen transition-all duration-300 ${
-          sidebarToggle ? "ml-0" : "md:ml-60"
-        }`}
+        className={`flex-1 min-h-screen md:ml-64 transition-all duration-300`}
       >
         <Nav
           PageName={"Home"}
