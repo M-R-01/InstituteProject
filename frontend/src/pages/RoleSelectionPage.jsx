@@ -18,21 +18,31 @@ const RoleSelectionPage = () => {
 
   return (
     <>
-      <div className="h-screen w-full flex items-center justify-center bg-white">
-        <div className="sm:h-[35rem] sm:w-2/3 flex flex-col items-center justify-center sm:space-y-4">
-          <div className="text-xl sm:text-2xl text-black">Login as a-</div>
-          <div className="h-[31rem] w-full sm:h-[25rem] sm:w-4/5 mx-auto flex sm:flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-center ">
-            <div className="h-[14rem] w-full sm:h-full sm:w-1/2 flex flex-col items-center justify-center space-y-2 sm:space-y-4 sm:border-r-2 sm:border-dotted">
-                <div className="font-bold text-xl sm:text-2xl underline text-[#B98389]">Faculty</div>
-                <div className="h-[12rem] w-[8rem] sm:h-[20rem] sm:w-[15rem] ">
-                    <img className="h-[12rem] w-[8rem] sm:h-[20rem] sm:w-[15rem] " src={teacher} alt="faculty" onClick={handleFacultyClick}/>
-                </div>
+      <div className="min-h-screen w-full flex items-center justify-center bg-white px-4 py-6">
+        <div className="w-full max-w-5xl flex flex-col items-center justify-center space-y-6">
+          <div className="text-2xl sm:text-3xl text-black font-semibold">Login as a-</div>
+          <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12">
+            <div className="flex flex-col items-center justify-center gap-3 sm:gap-6 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r-2 border-dotted pb-4 sm:pb-0">
+              <div className="font-bold text-xl sm:text-2xl underline text-[#B98389]">Faculty</div>
+              <div className="w-32 sm:w-60">
+                <img
+                  className="w-full h-auto cursor-pointer transition-transform hover:scale-105"
+                  src={teacher}
+                  alt="faculty"
+                  onClick={handleFacultyClick}
+                />
+              </div>
             </div>
-            <div className="h-[14rem] w-full sm:h-full sm:w-1/2 flex flex-col items-center justify-center sm:space-y-4 ">
-                <div className="font-bold text-xl sm:text-2xl underline text-[#B98389]">Reviewer</div>
-                <div className="h-[12rem] w-[8rem] sm:h-[20rem] sm:w-[15rem] ">
-                    <img className="h-[12rem] w-[8rem] sm:h-[20rem] sm:w-[15rem] " src={student} alt='reviewer' onClick={handleReviewerClick}/>
-                </div>
+            <div className="flex flex-col items-center justify-center gap-3 sm:gap-6 w-full sm:w-1/2">
+              <div className="font-bold text-xl sm:text-2xl underline text-[#B98389]">Reviewer</div>
+              <div className="w-32 sm:w-60">
+                <img
+                  className="w-full h-auto cursor-pointer transition-transform hover:scale-105"
+                  src={student}
+                  alt='reviewer'
+                  onClick={handleReviewerClick}
+                />
+              </div>
             </div>
           </div>
         </div>
