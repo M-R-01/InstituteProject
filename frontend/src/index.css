@@ -3,9 +3,11 @@
   line-height: 1.5;
   font-weight: 400;
 
+  color: black;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #d6d6d6;
+  transition: all 0.3s ease-in-out;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

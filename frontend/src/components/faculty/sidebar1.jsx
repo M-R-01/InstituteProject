@@ -1,65 +1,78 @@
-import React from 'react';
+import React from "react";
 import { GiTeacher } from "react-icons/gi";
-import { IoHome, IoSettingsOutline } from 'react-icons/io5';
-import { BiLogOut } from 'react-icons/bi';
-import { FaBars } from 'react-icons/fa6';
+import { IoHome } from "react-icons/io5";
+import { BiLogOut } from "react-icons/bi";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Sidebar = ({ sidebarToggle, setSidebarToggle, username }) => {
+const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
+  const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+  const email = localStorage.getItem("email");
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    localStorage.removeItem("FID");
+    navigate("/");
+  };
+
+  const SidebarContent = () => (
+    <>
+      <div className="p-4">
+        <h1 className="text-xl text-[#2b193d] font-bold">
+          Hello,
+          <p className="text-s font-medium">{email}</p>
+        </h1>
+      </div>
+      <ul className="text-[#2b193d] font-bold space-y-2 px-4">
+        <li className="hover:bg-blue-700 rounded p-2">
+          <Link to={`/${role}/home`} className="flex items-center gap-2">
+            <IoHome size={20} />
+            <span>Home</span>
+          </Link>
+        </li>
+        <li className="hover:bg-blue-700 rounded p-2">
+          <Link to={`/${role}/courses`} className="flex items-center gap-2">
+            <GiTeacher size={20} />
+            <span>{role === "faculty" ? "My Courses" : "Assigned Courses"}</span>
+          </Link>
+        </li>
+      </ul>
+      <div className="mt-auto p-4">
+        <button
+          onClick={logout}
+          className="w-full text-left hover:bg-red-300 p-2  rounded flex items-center gap-2"
+        >
+          <BiLogOut size={20} />
+          Log-out
+        </button>
+      </div>
+    </>
+  );
+
   return (
-    <div>
-      <button
-        className="p-2 md:hidden"
-        onClick={() => setSidebarToggle(!sidebarToggle)}
-        aria-label="Toggle Sidebar"
-      >
-        <FaBars />
-      </button>
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex flex-col w-64 bg-blue-400 h-screen fixed top-0 left-0 z-20">
+        <SidebarContent />
+      </div>
 
-      
-      <div
-        className={`${
-          sidebarToggle ? "block" : "hidden"
-        } md:block w-64 bg-blue-400 flex flex-col fixed h-full px-4 py-2 transition-all duration-300 ease-in-out`}
-      >
-        <div className="flex-grow p-4">
-          
-          <h1 className="text-xl text-black font-bold md:block">
-            Hello,
-            <p>{username}</p>
-          </h1>
-
-          
-          <ul className="mt-3 text-black font-bold py-3">
-            <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
-                <IoHome className="inline-block w-6 h-6 mr-2 -mt-2" />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Home</span>
-              </a>
-            </li>
-            <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
-                <GiTeacher className="inline-block w-6 h-6 mr-2 -mt-2" />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>My Course</span>
-              </a>
-            </li>
-            <li className="mb-4 rounded hover:shadow hover:bg-gray-500 py-2">
-              <a href="#" className=" px-3">
-                <IoSettingsOutline className="inline-block w-6 h-6 mr-2 -mt-2 " />
-                <span className={`${sidebarToggle ? "inline" : "hidden"} md:inline`}>Settings</span>
-              </a>
-            </li>
-          </ul>
+      {/* Mobile Sidebar Drawer */}
+      {sidebarToggle && (
+        <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30">
+          <div className="w-64 bg-blue-400 h-full p-4 relative">
+            <button
+              onClick={() => setSidebarToggle(false)}
+              className="absolute top-2 right-2 text-[#B98389] font-bold text-xl"
+            >
+              {"<"}
+            </button>
+            <SidebarContent />
+          </div>
         </div>
-
-        
-        <div className="absolute bottom-0  p-4 rounded hover:shadow hover:bg-red-300  ">
-          <a href="#" className=" p-3">
-            <BiLogOut className="inline-block w-6 h-6 mr-2 -mt-2" />
-            <span className={`${sidebarToggle ? 'block' : "hidden"} md:block`}>Log-out!</span>
-          </a>
-        </div>
-    </div>
-    </div>
+      )}
+    </>
   );
 };
 

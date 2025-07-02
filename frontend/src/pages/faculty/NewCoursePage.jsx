@@ -4,6 +4,7 @@ import Logo1 from "../../assets/courselaptopimage.png";
 import Logo2 from "../../assets/courseimagemobile.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { showFacultyToast } from "../../components/faculty/FacultyToast";
 
 function NewCoursePage() {
   const [courseName, setCourseName] = useState("");
@@ -14,7 +15,7 @@ function NewCoursePage() {
   const handleSubmit = (e) => {
     axios
       .post(
-        "https://instituteproject.up.railway.app/faculty/submit-for-approval",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/submit-for-approval",
         {
           courseName: courseName,
           courseDescription: courseDescription,
@@ -27,12 +28,12 @@ function NewCoursePage() {
       )
       .then((response) => {
         console.log(response.data);
-        alert("Course submitted for approval successfully!");
-        navigate("/faculty/home");
+        showFacultyToast("Course submitted successfully!", "success");
+        navigate(`/faculty/home`);
       })
       .catch((error) => {
         console.error("There was an error submitting the course!", error);
-        alert("Failed to submit course. Please try again.");
+        showFacultyToast("Failed to submit course. Please try again.", "error");
       });
   };
 

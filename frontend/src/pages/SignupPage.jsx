@@ -33,22 +33,38 @@ const SignupPage = () => {
       return;
     }
 
-    axios
-      .post("https://instituteproject.up.railway.app/register", {
-        name,
-        email,
-        password,
-        institution: college,
-        qualification,
-        department,
-      })
-      .then((response) => {
-        if (response.data.message) {
-          setShowTerms(true);
-        } else {
-          alert("Signup failed. Please try again.");
-        }
-      });
+
+    axios.post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/register", {
+      name: name,
+      email: email,
+      password: password,
+      institution: college,
+      qualification: qualification,
+      department: department
+    })
+    .then((response) => {
+      if (response.data.message) {
+        setShowTerms(true);
+      } else {
+        alert("Signup failed. Please try again.");
+      }
+    })
+  }
+
+  const handleNameChange = (e) => {
+    setname(e.target.value);
+  };
+
+  const handleEmailChange = (e) => {
+    setemail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setpassword(e.target.value);
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    setconfirmPassword(e.target.value);
   };
 
   return (

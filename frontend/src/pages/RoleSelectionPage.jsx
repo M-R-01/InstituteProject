@@ -5,14 +5,15 @@ import { useNavigate } from "react-router-dom";
 
 const RoleSelectionPage = () => {
   const navigate = useNavigate();
+
   const handleFacultyClick = () => {
     localStorage.setItem("role", "faculty");
-    navigate("/faculty/home");
+    navigate(`/faculty/home`);
   };
 
   const handleReviewerClick = () => {
     localStorage.setItem("role", "reviewer");
-    navigate("/reviewer/home");
+    navigate(`/reviewer/home`);
   }
 
   return (
