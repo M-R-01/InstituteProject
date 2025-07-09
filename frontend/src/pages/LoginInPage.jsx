@@ -35,7 +35,7 @@ const LoginInPage = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-white px-4">
-      <div className="w-full max-w-md flex flex-col items-center space-y-6 p-6 border-2 rounded-xl shadow-md">
+      <div className="w-full max-w-md flex flex-col items-center space-y-6 p-6">
         <div className="flex space-x-2 text-sm sm:text-base">
           <p className="text-black">Don't have an account?</p>
           <Link to="/signup" className="underline text-purple-700">Signup Now</Link>
@@ -71,13 +71,13 @@ const LoginInPage = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-3/4 h-12 border-2 rounded-full text-lg bg-gradient-to-r from-[#78F6F7] via-[#576BD7] to-[#3E01BF] text-white font-semibold"
+            className="w-1/3 h-12 border-2 rounded-full text-lg bg-gradient-to-r from-[#78F6F7] via-[#576BD7] to-[#3E01BF] text-white font-semibold hover:scale-105 transition duration-300 ease-in-out"
           >
             Login
           </button>
 
           {/* Forgot Password */}
-          <div className="text-black text-sm underline font-medium">
+          <div className="text-black text-sm underline font-medium hover:text-[#B98389] transition duration-300 ease-in-out">
             <Link to="/forgotpassword">Forgot Password?</Link>
           </div>
         </form>

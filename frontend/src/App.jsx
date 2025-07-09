@@ -7,6 +7,8 @@ import SignupPage from "./pages/SignupPage.jsx";
 import RoleSelectionPage from "./pages/RoleSelectionPage.jsx";
 import ViewFile from "./pages/viewFile.jsx";
 
+import AdminLogin from "./pages/admin/adminLogin.jsx";
+import AdminVerifyPage from "./pages/admin/adminVerify.jsx";
 import AdminHome from "./pages/admin/adminHome.jsx";
 import AdminCourses from "./pages/admin/adminCourses.jsx";
 import AdminFaculty from "./pages/admin/adminFaculty.jsx";
@@ -22,6 +24,7 @@ import ReviewerCourses from "./pages/reviewer/reviewerCourses.jsx";
 import { FacultyToastContainer } from "./components/faculty/FacultyToast.jsx";
 import SessionManager from "./components/sessionManager.jsx";
 import PrivateRoute from "./components/privateRoute.jsx";
+import AdminProtectedRoute from "./components/admin/adminPrivateRoute.jsx";
 
 function App() {
   return (
@@ -34,9 +37,11 @@ function App() {
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
         <Route path="/roleselection" element={<PrivateRoute><RoleSelectionPage /></PrivateRoute>} />
 
-        <Route path="/admin/home" element={<AdminHome />} />
-        <Route path="/admin/courses" element={<AdminCourses />} />
-        <Route path="/admin/faculty" element={<AdminFaculty />} />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/verify/:token" element={<AdminVerifyPage />} />
+        <Route path="/admin/home" element={<AdminProtectedRoute><AdminHome /></AdminProtectedRoute>} />
+        <Route path="/admin/courses" element={<AdminProtectedRoute><AdminCourses /></AdminProtectedRoute>} />
+        <Route path="/admin/faculty" element={<AdminProtectedRoute><AdminFaculty /></AdminProtectedRoute>} />
 
         <Route path="/faculty/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
         <Route path="/faculty/courses" element={<PrivateRoute><FacultyCourses /></PrivateRoute>} />

@@ -39,7 +39,7 @@ const RoleSelectionPage = () => {
             <img
               src={student}
               alt="Reviewer"
-              className="w-full sm:w-60 cursor-pointer transition-transform duration-200 hover:scale-105"
+              className="w-full cursor-pointer transition-transform duration-200 hover:scale-105"
               onClick={handleReviewerClick}
             />
           </div>

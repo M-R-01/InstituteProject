@@ -33,7 +33,11 @@ const AdminCourses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses"
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        }
       )
       .then((response) => {
         console.log(response.data);
@@ -47,7 +51,11 @@ const AdminCourses = () => {
   const getSelectedCourse = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
       )
       .then((response) => {
         setSelectedCourse(response.data);
@@ -61,7 +69,11 @@ const AdminCourses = () => {
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
       )
       .then((response) => {
         setTopics(response.data);
@@ -75,7 +87,11 @@ const AdminCourses = () => {
   const getAvailableReviewers = () => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers"
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
       )
       .then((response) => {
         setAvailableReviewers(response.data);
@@ -89,7 +105,11 @@ const AdminCourses = () => {
   const assignReviewerToCourse = (reviewer, courseId) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        },
         {
           courseId: courseId,
           reviewer: reviewer,
@@ -109,7 +129,11 @@ const AdminCourses = () => {
   const deleteReviewRequest = (reviewer, courseId) => {
     axios
       .delete(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        },
         {
           data: {
             reviewer: reviewer,

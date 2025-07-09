@@ -24,11 +24,17 @@ const AdminHome = () => {
 
   const [waitingCourses, setWaitingCourses] = useState([]);
   const [pendingFeedbacks, setPendingFeedbacks] = useState([]);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [pendingTopics, setPendingTopics] = useState([]);
 
   useEffect(() => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/metrics"
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/metrics", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        }
       )
       .then((response) => {
         setCourseCount(response.data.courseCount);
@@ -42,7 +48,11 @@ const AdminHome = () => {
 
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-waiting-courses"
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-waiting-courses", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        }
       )
       .then((response) => {
         setWaitingCourses(response.data);
@@ -53,7 +63,11 @@ const AdminHome = () => {
 
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/check-feedbacks"
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/check-feedbacks", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        }
       )
       .then((response) => {
         console.log("Pending feedbacks:", response.data);
@@ -68,9 +82,14 @@ const AdminHome = () => {
     /* Functions to handle course approval */
   }
   const handleApprove = (row) => {
+    console.log(row);
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        },
         {
           courseName: row.Course_name,
           courseDescription: row.Course_description,
@@ -81,9 +100,7 @@ const AdminHome = () => {
         console.log("Course approved:", response.data);
         showFacultyToast("Course approved successfully", "success");
         setWaitingCourses((prevCourses) =>
-          prevCourses.filter(
-            (course) => course.Course_name !== row.Course_name
-          )
+          prevCourses.filter((course) => course.Course_name !== row.Course_name)
         );
       })
       .catch((error) => {
@@ -95,7 +112,11 @@ const AdminHome = () => {
   const handleReject = (row) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        },
         {
           courseName: row.Course_name,
           courseDescription: row.Course_description,
@@ -106,9 +127,7 @@ const AdminHome = () => {
         console.log("Course rejected:", response.data);
         showFacultyToast("Course rejected successfully", "success");
         setWaitingCourses((prevCourses) =>
-          prevCourses.filter(
-            (course) => course.Course_name !== row.Course_name
-          )
+          prevCourses.filter((course) => course.Course_name !== row.Course_name)
         );
       })
       .catch((error) => {
@@ -122,7 +141,11 @@ const AdminHome = () => {
   const sendReminder = (row) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder",
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          }
+        },
         {
           courseName: row.Course_Name,
           fileName: row.File_name,
@@ -139,7 +162,11 @@ const AdminHome = () => {
     pendingFeedbacks.forEach((row) => {
       axios
         .post(
-          "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder",
+          "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            }
+          },
           {
             feedbacks: pendingFeedbacks,
           }
@@ -217,6 +244,22 @@ const AdminHome = () => {
       cell: (props) => <p>{props.getValue()}</p>,
     },
     {
+      header: "Actions",
+      cell: (row) => (
+        <div className="flex flex-col space-y-2 w-full">
+          <button
+            className="bg-green-500 text-white m-1 px-1 py-1 rounded"
+            onClick={() => sendReminder(row.row.original)}
+          >
+            Send Reminder
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const pendingTopicsColumns = [
+    {
       header: "File Name",
       accessorKey: "File_name",
       cell: (props) => <p>{props.getValue()}</p>,
@@ -248,8 +291,19 @@ const AdminHome = () => {
   });
 
   const pendingTable = useReactTable({
-    data: pendingFeedbacks,
+    data: pendingFeedbacks.filter(
+  (course, index, self) =>
+    index === self.findIndex((c) => c.CID === course.CID)
+),
     columns: pendingColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const pendingTopicsTable = useReactTable({
+    data: pendingTopics,
+    columns: pendingTopicsColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -386,16 +440,12 @@ const AdminHome = () => {
           </div>
 
           {/*Pending feedbacks Section*/}
-          <div className="bg-white p-8 text-black rounded-lg shadow-md mt-5 mb-10 w-full overflow-auto">
-            <h2 className="text-md mb-4">Pending Feedbacks</h2>
+          <div className="bg-white p-8 text-black rounded-lg shadow-md w-full mb-10 overflow-auto">
+            <h2 className="text-md mb-4">Courses with Pending Feedbacks</h2>
             <button className="bg-blue-500 text-white px-3 py-1 rounded mb-5">
               Send Reminders
             </button>
-
-            <table
-              style={{ width: pendingTable.getCenterTotalSize() }}
-              className="table-fixed min-w-full text-black border border-gray-600"
-            >
+            <table className="table-fixed min-w-full text-black border border-gray-600">
               <thead className="bg-[#2b193d] text-white">
                 {pendingTable.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
@@ -422,11 +472,21 @@ const AdminHome = () => {
                   </tr>
                 ))}
               </thead>
-
               <tbody>
                 {pendingTable.getRowModel().rows.length > 0 ? (
                   pendingTable.getRowModel().rows.map((row) => (
-                    <tr key={row.id}>
+                    <tr
+                      key={row.id}
+                      className="cursor-pointer hover:bg-gray-100"
+                      onClick={() => {
+                        setSelectedCourseId(row.original.CID);
+                        setPendingTopics(
+                          pendingFeedbacks.filter(
+                            (feedback) => feedback.CID === row.original.CID
+                          )
+                        );
+                      }}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
@@ -458,29 +518,75 @@ const AdminHome = () => {
                 )}
               </tbody>
             </table>
+          </div>
 
-            {pendingTable.getRowModel().rows.length > 0 && (
-              <div className="mt-2">
-                <p>
-                  Page {pendingTable.getState().pagination.pageIndex + 1} of{" "}
-                  {pendingTable.getPageCount()}
-                </p>
-                <button
-                  className="border border-gray-600 text-sm p-1 mr-2"
-                  onClick={() => pendingTable.previousPage()}
-                  disabled={!pendingTable.getCanPreviousPage()}
-                >
-                  {"<"}
-                </button>
-                <button
-                  className="border border-gray-600 text-sm p-1"
-                  onClick={() => pendingTable.nextPage()}
-                  disabled={!pendingTable.getCanNextPage()}
-                >
-                  {">"}
-                </button>
-              </div>
-            )}
+          {/* Second Table: Topics for Selected Course */}
+          <div className="bg-white p-8 text-black rounded-lg shadow-md w-full overflow-auto">
+            <h2 className="text-md mb-4">
+              Topics for{" "}
+              {selectedCourseId
+                ? pendingFeedbacks.find((c) => c.CID === selectedCourseId)
+                    ?.Course_Name
+                : "Select a course above"}
+            </h2>
+            <table className="table-fixed min-w-full text-black border border-gray-600">
+              <thead className="bg-[#2b193d] text-white">
+                {pendingTopicsTable.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        style={{
+                          width:
+                            header.column.columnDef.header === "FID"
+                              ? "40px"
+                              : header.getSize(),
+                        }}
+                        className="font-bold text-left border border-gray-600 p-2"
+                      >
+                        {header.column.columnDef.header}
+                        {header.column.getCanSort() && (
+                          <FaSort
+                            onClick={header.column.getToggleSortingHandler()}
+                            className="inline ml-1 cursor-pointer"
+                          />
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {pendingTopicsTable.getRowModel().rows.length > 0 ? (
+                  pendingTopicsTable.getRowModel().rows.map((row) => (
+                    <tr
+                      key={row.id}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          className="text-left text-black break-words border border-gray-600 p-2"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={pendingTopicsTable.getAllColumns().length}
+                      className="text-left border border-gray-600 p-2"
+                    >
+                      No pending feedbacks
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </main>
       </div>

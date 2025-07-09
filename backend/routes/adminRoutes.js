@@ -3,10 +3,11 @@
 import db from "../index.js";
 import express from "express";
 import mailHelper from "../helper.js";
+import verifyAdmin from "../middleware/adminAuth.js"
 
 const router = express.Router();
 
-router.get("/metrics", (req, res) => {
+router.get("/metrics", verifyAdmin, (req, res) => {
   db.query(
     `SELECT 
     (SELECT COUNT(*) FROM Courses) AS courseCount,
@@ -22,7 +23,7 @@ router.get("/metrics", (req, res) => {
   );
 });
 
-router.get("/get-waiting-courses", (req, res) => {
+router.get("/get-waiting-courses", verifyAdmin, (req, res) => {
   db.query(
     "SELECT w.Course_name,w.Course_description,f.Faculty_Name,f.Faculty_Qualification,f.Faculty_department,f.Faculty_Institution FROM Waiting_for_approval w LEFT JOIN Faculty f ON w.FID=f.FID",
     (err, result) => {
@@ -32,9 +33,9 @@ router.get("/get-waiting-courses", (req, res) => {
   );
 });
 
-router.post("/approve-waiting-courses", (req, res) => {
+router.post("/approve-waiting-courses", verifyAdmin, (req, res) => {
   const { courseName, courseDescription, status } = req.body;
-
+  console.log(req.body);
   // Validate inputs
   if (!courseName || !courseDescription || !status) {
     return res
@@ -108,7 +109,7 @@ router.post("/approve-waiting-courses", (req, res) => {
   );
 });
 
-router.get("/faculty", (req, res) => {
+router.get("/faculty", verifyAdmin, (req, res) => {
   db.query(
     `SELECT 
         f.FID,
@@ -134,7 +135,7 @@ router.get("/faculty", (req, res) => {
   );
 });
 
-router.get("/courses", (req, res) => {
+router.get("/courses", verifyAdmin, (req, res) => {
   db.query(
     `SELECT 
       c.CID,
@@ -161,7 +162,7 @@ router.get("/courses", (req, res) => {
   );
 });
 
-router.get("/course/:CID", (req, res) => {
+router.get("/course/:CID", verifyAdmin, (req, res) => {
   const { CID } = req.params;
   db.query(
     `SELECT 
@@ -200,7 +201,7 @@ router.get("/course/:CID", (req, res) => {
   );
 });
 
-router.get("/get-topics/:courseId", (req, res) => {
+router.get("/get-topics/:courseId", verifyAdmin, (req, res) => {
   const { courseId } = req.params;
 
   // Validate inputs
@@ -214,7 +215,7 @@ router.get("/get-topics/:courseId", (req, res) => {
   });
 });
 
-router.get("/available-reviewers", (req, res) => {
+router.get("/available-reviewers", verifyAdmin, (req, res) => {
   db.query(
     `SELECT 
       f.FID,
@@ -240,7 +241,7 @@ router.get("/available-reviewers", (req, res) => {
   );
 });
 
-router.post("/assign-reviewers", (req, res) => {
+router.post("/assign-reviewers", verifyAdmin, (req, res) => {
   const { courseId, reviewer } = req.body;
 
   // Validate inputs
@@ -283,7 +284,7 @@ router.post("/assign-reviewers", (req, res) => {
   );
 });
 
-router.delete("/delete-review-request", (req, res) => {
+router.delete("/delete-review-request", verifyAdmin, (req, res) => {
   const { courseId, reviewer } = req.body;
 
   // Validate inputs
@@ -301,7 +302,7 @@ router.delete("/delete-review-request", (req, res) => {
   );
 });
 
-router.get("/check-feedbacks", (req, res) => {
+router.get("/check-feedbacks", verifyAdmin, (req, res) => {
   db.query(
     `SELECT
     c.CID, 
@@ -328,7 +329,7 @@ router.get("/check-feedbacks", (req, res) => {
   );
 });
 
-router.post("/send-reminder", (req, res) => {
+router.post("/send-reminder", verifyAdmin, (req, res) => {
   const { courseName, fileName, reviewerEmail } = req.body;
 
   // Validate inputs
@@ -366,7 +367,7 @@ router.post("/send-reminder", (req, res) => {
   );
 });
 
-router.post("/send-all-reminders", (req, res) => {
+router.post("/send-all-reminders", verifyAdmin, (req, res) => {
   const feedbacks = req.body.feedbacks;
   if (!Array.isArray(feedbacks) || feedbacks.length === 0) {
     return res.status(400).json({ error: "Feedbacks array is required" });

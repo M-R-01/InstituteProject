@@ -4,9 +4,18 @@ import { BiLogOut } from 'react-icons/bi';
 import { FaBars } from 'react-icons/fa6';
 import { LiaChalkboardTeacherSolid } from 'react-icons/lia';
 import { PiStudentFill } from 'react-icons/pi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
+  const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.removeItem("adminToken");
+    navigate("/admin");
+  };
+
+
   return (
     <div>
       <button
@@ -50,6 +59,14 @@ const Sidebar = ({ sidebarToggle, setSidebarToggle }) => {
             </li>
           </ul>
         </div>
+
+        <button
+          onClick={logout}
+          className="w-full text-left hover:bg-red-300 p-2  rounded flex items-center gap-2"
+        >
+          <BiLogOut size={20} />
+          Log-out
+        </button>
 
     </div>
     </div>
