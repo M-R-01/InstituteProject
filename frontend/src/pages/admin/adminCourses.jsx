@@ -33,10 +33,11 @@ const AdminCourses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses", {
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
+          },
         }
       )
       .then((response) => {
@@ -51,7 +52,8 @@ const AdminCourses = () => {
   const getSelectedCourse = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`, {
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -69,7 +71,8 @@ const AdminCourses = () => {
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`, {
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -87,7 +90,8 @@ const AdminCourses = () => {
   const getAvailableReviewers = () => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers", {
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
@@ -105,14 +109,15 @@ const AdminCourses = () => {
   const assignReviewerToCourse = (reviewer, courseId) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
-        },
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers",
         {
           courseId: courseId,
           reviewer: reviewer,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
         }
       )
       .then((response) => {
@@ -126,18 +131,43 @@ const AdminCourses = () => {
       });
   };
 
-  const deleteReviewRequest = (reviewer, courseId) => {
+  const sendRequestReminder = (reviewer, courseName) => {
     axios
-      .delete(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request", {
+      .post(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-request-reminder",
+        {
+          courseName: courseName,
+          reviewer: reviewer,
+        },
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
-        },
+        }
+      )
+      .then((response) => {
+        console.log("Reminder sent:", response.data);
+        showFacultyToast("Reminder sent successfully", "success");
+      })
+      .catch((error) => {
+        console.error("Error sending reminder:", error);
+        showFacultyToast("Error sending reminder", "error");
+      });
+  };
+
+  const deleteReviewRequest = (reviewer, courseId) => {
+    axios
+      .delete(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request",
         {
           data: {
             reviewer: reviewer,
             courseId: courseId,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
         }
       )
@@ -523,17 +553,30 @@ const AdminCourses = () => {
                     )}
 
                     {selectedCourse.Reviewer_Status == "pending" ? (
-                      <button
-                        className="bg-red-600 hover:bg-red-700 text-white p-2 w-1/2 rounded-lg"
-                        onClick={() => {
-                          deleteReviewRequest(
-                            selectedCourse.Reviewer_Id,
-                            selectedCourse.CID
-                          );
-                        }}
-                      >
-                        Delete Request
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          className="bg-red-600 hover:bg-red-700 text-white p-2 w-1/3 rounded-lg"
+                          onClick={() => {
+                            deleteReviewRequest(
+                              selectedCourse.Reviewer_Id,
+                              selectedCourse.CID
+                            );
+                          }}
+                        >
+                          Delete Request
+                        </button>
+                        <button
+                          className="bg-[#2b193d] hover:bg-green-700 text-white p-2 w-1/3 rounded-lg"
+                          onClick={() => {
+                            sendRequestReminder(
+                              selectedCourse.Reviewer_Id,
+                              selectedCourse.Course_name
+                            );
+                          }}
+                        >
+                          Send Reminder
+                        </button>
+                      </div>
                     ) : (
                       ""
                     )}
@@ -715,20 +758,20 @@ const AdminCourses = () => {
                     Page {topicsTable.getState().pagination.pageIndex + 1} of{" "}
                     {topicsTable.getPageCount()}
                   </p>
-                 <button
-                  className="border border-gray-600 text-sm p-2 m-1"
-                  onClick={() => topicsTable.previousPage()}
-                  disabled={!topicsTable.getCanPreviousPage()}
-                >
-                  {"<"}
-                </button>
-                <button
-                  className="border border-gray-600 text-sm p-2 m-1"
-                  onClick={() => topicsTable.nextPage()}
-                  disabled={!topicsTable.getCanNextPage()}
-                >
-                  {">"}
-                </button>
+                  <button
+                    className="border border-gray-600 text-sm p-2 m-1"
+                    onClick={() => topicsTable.previousPage()}
+                    disabled={!topicsTable.getCanPreviousPage()}
+                  >
+                    {"<"}
+                  </button>
+                  <button
+                    className="border border-gray-600 text-sm p-2 m-1"
+                    onClick={() => topicsTable.nextPage()}
+                    disabled={!topicsTable.getCanNextPage()}
+                  >
+                    {">"}
+                  </button>
                 </div>
               )}
             </div>

@@ -6,11 +6,13 @@ import Sidebar from "../../components/admin/sidebar2";
 import { FaBars, FaSort } from "react-icons/fa";
 import axios from "axios";
 import { showFacultyToast } from "../../components/faculty/FacultyToast";
+import CheckboxColumnFilter from "../../components/filterbox";
 
 import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
@@ -24,16 +26,15 @@ const AdminHome = () => {
 
   const [waitingCourses, setWaitingCourses] = useState([]);
   const [pendingFeedbacks, setPendingFeedbacks] = useState([]);
-  const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const [pendingTopics, setPendingTopics] = useState([]);
 
   useEffect(() => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/metrics", {
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/metrics",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
+          },
         }
       )
       .then((response) => {
@@ -48,10 +49,11 @@ const AdminHome = () => {
 
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-waiting-courses", {
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-waiting-courses",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
+          },
         }
       )
       .then((response) => {
@@ -63,10 +65,11 @@ const AdminHome = () => {
 
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/check-feedbacks", {
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/check-feedbacks",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
+          },
         }
       )
       .then((response) => {
@@ -85,15 +88,17 @@ const AdminHome = () => {
     console.log(row);
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
-        },
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses",
+
         {
           courseName: row.Course_name,
           courseDescription: row.Course_description,
           status: "approved",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
         }
       )
       .then((response) => {
@@ -112,15 +117,16 @@ const AdminHome = () => {
   const handleReject = (row) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
-        },
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses",
         {
           courseName: row.Course_name,
           courseDescription: row.Course_description,
           status: "rejected",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
         }
       )
       .then((response) => {
@@ -141,40 +147,48 @@ const AdminHome = () => {
   const sendReminder = (row) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          }
-        },
+        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder/${row.CID}`,
         {
           courseName: row.Course_Name,
           fileName: row.File_name,
           reviewerEmail: row.Reviewer_Email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
         }
       )
       .then((response) => {
         console.log("Reminder sent:", response.data);
         showFacultyToast("Reminder sent successfully", "success");
+      })
+      .catch((error) => {
+        console.error("Error sending reminder:", error);
+        showFacultyToast("Error sending reminder", "error");
       });
   };
 
   const sendReminderAll = () => {
-    pendingFeedbacks.forEach((row) => {
-      axios
-        .post(
-          "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-            }
+    axios
+      .post(
+        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder",
+        {
+          feedbacks: pendingFeedbacks,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
           },
-          {
-            feedbacks: pendingFeedbacks,
-          }
-        )
-        .then((response) => {
-          console.log("Reminder sent:", response.data);
-        });
-    });
+        }
+      )
+      .then((response) => {
+        console.log("Reminder sent:", response.data);
+        showFacultyToast("Reminder sent successfully", "success");
+      })
+      .catch((error) => {
+        showFacultyToast("Error sending reminder", "error");
+      });
   };
 
   {
@@ -237,32 +251,31 @@ const AdminHome = () => {
       header: "CID",
       accessorKey: "CID",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: false,
     },
     {
       header: "Course Name",
       accessorKey: "Course_Name",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
-    {
-      header: "Actions",
-      cell: (row) => (
-        <div className="flex flex-col space-y-2 w-full">
-          <button
-            className="bg-green-500 text-white m-1 px-1 py-1 rounded"
-            onClick={() => sendReminder(row.row.original)}
-          >
-            Send Reminder
-          </button>
-        </div>
-      ),
-    },
-  ];
-
-  const pendingTopicsColumns = [
     {
       header: "File Name",
       accessorKey: "File_name",
       cell: (props) => <p>{props.getValue()}</p>,
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      enableColumnFilter: true,
     },
     {
       header: "Actions",
@@ -291,22 +304,12 @@ const AdminHome = () => {
   });
 
   const pendingTable = useReactTable({
-    data: pendingFeedbacks.filter(
-  (course, index, self) =>
-    index === self.findIndex((c) => c.CID === course.CID)
-),
+    data: pendingFeedbacks,
     columns: pendingColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-  });
-
-  const pendingTopicsTable = useReactTable({
-    data: pendingTopics,
-    columns: pendingTopicsColumns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
@@ -442,7 +445,10 @@ const AdminHome = () => {
           {/*Pending feedbacks Section*/}
           <div className="bg-white p-8 text-black rounded-lg shadow-md w-full mb-10 overflow-auto">
             <h2 className="text-md mb-4">Courses with Pending Feedbacks</h2>
-            <button className="bg-blue-500 text-white px-3 py-1 rounded mb-5">
+            <button
+              className="bg-blue-500 text-white px-3 py-1 rounded mb-5"
+              onClick={sendReminderAll}
+            >
               Send Reminders
             </button>
             <table className="table-fixed min-w-full text-black border border-gray-600">
@@ -454,8 +460,8 @@ const AdminHome = () => {
                         key={header.id}
                         style={{
                           width:
-                            header.column.columnDef.header === "FID"
-                              ? "40px"
+                            header.column.columnDef.header === "CID"
+                              ? "10px"
                               : header.getSize(),
                         }}
                         className="font-bold text-left border border-gray-600 p-2"
@@ -467,6 +473,14 @@ const AdminHome = () => {
                             className="inline ml-1 cursor-pointer"
                           />
                         )}
+                        {header.column.getCanFilter() && (
+                          <div className="mt-2">
+                            <CheckboxColumnFilter
+                              column={header.column}
+                              data={pendingFeedbacks}
+                            />
+                          </div>
+                        )}
                       </th>
                     ))}
                   </tr>
@@ -475,18 +489,7 @@ const AdminHome = () => {
               <tbody>
                 {pendingTable.getRowModel().rows.length > 0 ? (
                   pendingTable.getRowModel().rows.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="cursor-pointer hover:bg-gray-100"
-                      onClick={() => {
-                        setSelectedCourseId(row.original.CID);
-                        setPendingTopics(
-                          pendingFeedbacks.filter(
-                            (feedback) => feedback.CID === row.original.CID
-                          )
-                        );
-                      }}
-                    >
+                    <tr key={row.id}>
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
@@ -510,75 +513,6 @@ const AdminHome = () => {
                   <tr>
                     <td
                       colSpan={pendingTable.getAllColumns().length}
-                      className="text-left border border-gray-600 p-2"
-                    >
-                      No pending feedbacks
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Second Table: Topics for Selected Course */}
-          <div className="bg-white p-8 text-black rounded-lg shadow-md w-full overflow-auto">
-            <h2 className="text-md mb-4">
-              Topics for{" "}
-              {selectedCourseId
-                ? pendingFeedbacks.find((c) => c.CID === selectedCourseId)
-                    ?.Course_Name
-                : "Select a course above"}
-            </h2>
-            <table className="table-fixed min-w-full text-black border border-gray-600">
-              <thead className="bg-[#2b193d] text-white">
-                {pendingTopicsTable.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={header.id}
-                        style={{
-                          width:
-                            header.column.columnDef.header === "FID"
-                              ? "40px"
-                              : header.getSize(),
-                        }}
-                        className="font-bold text-left border border-gray-600 p-2"
-                      >
-                        {header.column.columnDef.header}
-                        {header.column.getCanSort() && (
-                          <FaSort
-                            onClick={header.column.getToggleSortingHandler()}
-                            className="inline ml-1 cursor-pointer"
-                          />
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {pendingTopicsTable.getRowModel().rows.length > 0 ? (
-                  pendingTopicsTable.getRowModel().rows.map((row) => (
-                    <tr
-                      key={row.id}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className="text-left text-black break-words border border-gray-600 p-2"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={pendingTopicsTable.getAllColumns().length}
                       className="text-left border border-gray-600 p-2"
                     >
                       No pending feedbacks
