@@ -212,7 +212,7 @@ const ReviewerCourses = () => {
         }`}
       >
         <Nav
-          PageName={"Home"}
+          PageName={"Assigned Courses"}
           sidebarToggle={sidebarToggle}
           setSidebarToggle={setSidebarToggle}
         />
