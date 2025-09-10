@@ -291,7 +291,7 @@ app.post("/admin-verify/:token", (req, res) => {
           {
             Admin_Email: result[0].Admin_Email,
           },
-          process.env.JWT_SECRET,
+          process.env.ADMIN_JWT_SECRET,
           {
             expiresIn: "3h",
           },
