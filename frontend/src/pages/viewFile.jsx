@@ -30,7 +30,7 @@ const ViewFile = () => {
   useEffect(() => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/get-topic/${fileId}`,
+        `https://instituteproject-1.onrender.com/faculty/get-topic/${fileId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -49,7 +49,7 @@ const ViewFile = () => {
 
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/get-feedback/${fileId}`,
+        `https://instituteproject-1.onrender.com/faculty/get-feedback/${fileId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -77,7 +77,7 @@ const ViewFile = () => {
     if (feedbackExists) {
       axios
         .put(
-          `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/edit-feedback/${fileId}`,
+          `https://instituteproject-1.onrender.com/reviewer/edit-feedback/${fileId}`,
           {
             quality: quality,
             rating: rating,
@@ -101,7 +101,7 @@ const ViewFile = () => {
     } else {
       axios
         .post(
-          `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/submit-feedback/${fileId}`,
+          `https://instituteproject-1.onrender.com/reviewer/submit-feedback/${fileId}`,
           {
             quality: quality,
             rating: rating,

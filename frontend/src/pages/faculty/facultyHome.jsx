@@ -25,7 +25,7 @@ const HomePage = () => {
   useEffect(() => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`,
+        `https://instituteproject-1.onrender.com/faculty/${email}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -41,7 +41,7 @@ const HomePage = () => {
 
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/waiting-courses/${localStorage.getItem(
+        `https://instituteproject-1.onrender.com/faculty/waiting-courses/${localStorage.getItem(
           "FID"
         )}`,
         {

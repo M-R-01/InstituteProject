@@ -20,7 +20,7 @@ const VideoUploadPage = () => {
   const handleSubmit = () => {
     axios
       .post(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/new-topic/${CID}`,
+        `https://instituteproject-1.onrender.com/faculty/new-topic/${CID}`,
         {
           fileName: fileName,
           fileLink: embedLink,

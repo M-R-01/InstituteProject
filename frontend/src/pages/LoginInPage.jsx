@@ -12,7 +12,7 @@ const LoginInPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/login", {
+      .post("https://instituteproject-1.onrender.com/login", {
         email: username,
         password: password,
       })

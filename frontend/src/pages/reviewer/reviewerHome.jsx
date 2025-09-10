@@ -27,7 +27,7 @@ const ReviewerHome = () => {
   useEffect(() => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/${email}`,
+        `https://instituteproject-1.onrender.com/faculty/${email}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -44,7 +44,7 @@ const ReviewerHome = () => {
 
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/pending-feedbacks/${localStorage.getItem(
+        `https://instituteproject-1.onrender.com/reviewer/pending-feedbacks/${localStorage.getItem(
           "FID"
         )}`,
         {
@@ -60,7 +60,7 @@ const ReviewerHome = () => {
 
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/review-requests`,
+        `https://instituteproject-1.onrender.com/reviewer/review-requests`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -82,7 +82,7 @@ const ReviewerHome = () => {
   const handleAccept = (CID) => {
     axios
       .post(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/accept-review-request/${CID}`,
+        `https://instituteproject-1.onrender.com/reviewer/accept-review-request/${CID}`,
         { status: "accepted" },
         {
           headers: {
@@ -107,7 +107,7 @@ const ReviewerHome = () => {
   const handleDecline = (CID) => {
     axios
       .post(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/accept-review-request/${CID}`,
+        `https://instituteproject-1.onrender.com/reviewer/accept-review-request/${CID}`,
         { status: "declined" },
         {
           headers: {

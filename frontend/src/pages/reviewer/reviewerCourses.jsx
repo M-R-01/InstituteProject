@@ -24,7 +24,7 @@ const ReviewerCourses = () => {
   useEffect(() => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/courses-to-review`,
+        `https://instituteproject-1.onrender.com/reviewer/courses-to-review`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -43,7 +43,7 @@ const ReviewerCourses = () => {
   const getSelectedCourse = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/course/${CID}`,
+        `https://instituteproject-1.onrender.com/faculty/course/${CID}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -65,7 +65,7 @@ const ReviewerCourses = () => {
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/reviewer/topics-to-review/${CID}`,
+        `https://instituteproject-1.onrender.com/reviewer/topics-to-review/${CID}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

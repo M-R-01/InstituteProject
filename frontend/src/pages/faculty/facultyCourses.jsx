@@ -28,7 +28,7 @@ const FacultyCourses = () => {
   useEffect(() => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/courses/${localStorage.getItem(
+        `https://instituteproject-1.onrender.com/faculty/courses/${localStorage.getItem(
           "FID"
         )}`,
         {
@@ -48,7 +48,7 @@ const FacultyCourses = () => {
   const getSelectedCourse = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/course/${CID}`,
+        `https://instituteproject-1.onrender.com/faculty/course/${CID}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -67,7 +67,7 @@ const FacultyCourses = () => {
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/get-topics/${CID}`, {
+        `https://instituteproject-1.onrender.com/faculty/get-topics/${CID}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -85,7 +85,7 @@ const FacultyCourses = () => {
   const completeCourse = (CID) => {
     axios
       .post(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/faculty/complete-course/${CID}`,
+        `https://instituteproject-1.onrender.com/faculty/complete-course/${CID}`,
         {
           status: "Completed"
         },

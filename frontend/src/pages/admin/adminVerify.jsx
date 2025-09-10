@@ -14,7 +14,7 @@ const AdminVerifyPage = () => {
     if (!token) return;
 
     axios
-      .post(`https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin-verify/${token}`)
+      .post(`https://instituteproject-1.onrender.com/admin-verify/${token}`)
       .then((res) => {
         const jwt = res.data.adminToken;
         const decodedToken = JSON.parse(atob(jwt.split(".")[1]));

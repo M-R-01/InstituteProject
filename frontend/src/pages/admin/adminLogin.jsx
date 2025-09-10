@@ -8,7 +8,7 @@ const AdminLogin = () => {
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin-login", { email })
+      .post("https://instituteproject-1.onrender.com/admin-login", { email })
       .then((response) => {
         console.log(response.data);
         alert("If your account exists, you will receive an email to reset your password.");

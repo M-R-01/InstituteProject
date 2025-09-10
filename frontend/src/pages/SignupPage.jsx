@@ -34,7 +34,7 @@ const SignupPage = () => {
     }
 
 
-    axios.post("https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/register", {
+    axios.post("https://instituteproject-1.onrender.com/register", {
       name: name,
       email: email,
       password: password,

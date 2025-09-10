@@ -30,7 +30,7 @@ const AdminHome = () => {
   useEffect(() => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/metrics",
+        "https://instituteproject-1.onrender.com/admin/metrics",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -49,7 +49,7 @@ const AdminHome = () => {
 
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-waiting-courses",
+        "https://instituteproject-1.onrender.com/admin/get-waiting-courses",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -65,7 +65,7 @@ const AdminHome = () => {
 
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/check-feedbacks",
+        "https://instituteproject-1.onrender.com/admin/check-feedbacks",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -88,7 +88,7 @@ const AdminHome = () => {
     console.log(row);
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses",
+        "https://instituteproject-1.onrender.com/admin/approve-waiting-courses",
 
         {
           courseName: row.Course_name,
@@ -117,7 +117,7 @@ const AdminHome = () => {
   const handleReject = (row) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/approve-waiting-courses",
+        "https://instituteproject-1.onrender.com/admin/approve-waiting-courses",
         {
           courseName: row.Course_name,
           courseDescription: row.Course_description,
@@ -147,7 +147,7 @@ const AdminHome = () => {
   const sendReminder = (row) => {
     axios
       .post(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder/${row.CID}`,
+        `https://instituteproject-1.onrender.com/admin/send-reminder/${row.CID}`,
         {
           courseName: row.Course_Name,
           fileName: row.File_name,
@@ -172,7 +172,7 @@ const AdminHome = () => {
   const sendReminderAll = () => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-reminder",
+        "https://instituteproject-1.onrender.com/admin/send-reminder",
         {
           feedbacks: pendingFeedbacks,
         },

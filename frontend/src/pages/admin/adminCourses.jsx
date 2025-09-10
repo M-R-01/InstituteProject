@@ -33,7 +33,7 @@ const AdminCourses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/courses",
+        "https://instituteproject-1.onrender.com/admin/courses",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -52,7 +52,7 @@ const AdminCourses = () => {
   const getSelectedCourse = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/course/${CID}`,
+        `https://instituteproject-1.onrender.com/admin/course/${CID}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -71,7 +71,7 @@ const AdminCourses = () => {
   const getCourseTopics = (CID) => {
     axios
       .get(
-        `https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/get-topics/${CID}`,
+        `https://instituteproject-1.onrender.com/admin/get-topics/${CID}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -90,7 +90,7 @@ const AdminCourses = () => {
   const getAvailableReviewers = () => {
     axios
       .get(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/available-reviewers",
+        "https://instituteproject-1.onrender.com/admin/available-reviewers",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -109,7 +109,7 @@ const AdminCourses = () => {
   const assignReviewerToCourse = (reviewer, courseId) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/assign-reviewers",
+        "https://instituteproject-1.onrender.com/admin/assign-reviewers",
         {
           courseId: courseId,
           reviewer: reviewer,
@@ -134,7 +134,7 @@ const AdminCourses = () => {
   const sendRequestReminder = (reviewer, courseName) => {
     axios
       .post(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/send-request-reminder",
+        "https://instituteproject-1.onrender.com/admin/send-request-reminder",
         {
           courseName: courseName,
           reviewer: reviewer,
@@ -158,7 +158,7 @@ const AdminCourses = () => {
   const deleteReviewRequest = (reviewer, courseId) => {
     axios
       .delete(
-        "https://ee891903-6ca9-497c-8a3c-a66b9f31844e-00-1zmfh43bt3bbm.sisko.replit.dev/admin/delete-review-request",
+        "https://instituteproject-1.onrender.com/admin/delete-review-request",
         {
           data: {
             reviewer: reviewer,
